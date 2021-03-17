@@ -11,48 +11,34 @@ using SpeedyAPI.Models;
 
 namespace SpeedyAPI.Controllers
 {
-    public class KeysController : Controller
+    public class SchoolAccountsController : Controller
     {
         private readonly MvcSpeedyAPIContext _context;
 
-        public static string SESSION_KEY_ID = "session_key_id";
-
-        public KeysController(MvcSpeedyAPIContext context)
+        public SchoolAccountsController(MvcSpeedyAPIContext context)
         {
             _context = context;
         }
 
-        // GET: Keys/Use
-        public IActionResult Use()
-        {
-            return View("Use");
-        } 
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Use(string keyText)
-        {
-            var key = await _context.keys.FirstOrDefaultAsync(m => m.keyText.Equals(keyText));
-
-            if (key == null)
-            {
-                ViewBag.error = "Key not found, you can buy one at ...";
-                return View("Use");
-            }
-            
-            HttpContext.Session.SetInt32(SESSION_KEY_ID, key.id);
-
-            return RedirectToAction("Create", "SchoolAccounts");
-        }
-
-
-        // GET: Keys
+        // GET: SchoolAccounts
         public async Task<IActionResult> Index()
         {
-            return View(await _context.keys.ToListAsync());
+            if (HttpContext.Session.GetString(AdminController.SESSION_ADMIN_ROLE) == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View(await _context.SchoolAccounts.ToListAsync());
         }
 
-        // GET: Keys/Details/5
+
+        // GET : SchoolAccounts/Login
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        // GET: SchoolAccounts/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -60,40 +46,52 @@ namespace SpeedyAPI.Controllers
                 return NotFound();
             }
 
-            var key = await _context.keys
+            var schoolAccount = await _context.SchoolAccounts
                 .FirstOrDefaultAsync(m => m.id == id);
-            if (key == null)
+            if (schoolAccount == null)
             {
                 return NotFound();
             }
 
-            return View(key);
+            return View(schoolAccount);
         }
 
-        // GET: Keys/Create
-        
+        // GET: SchoolAccounts/Create
         public IActionResult Create()
         {
-            return View();
+            if (HttpContext.Session.GetInt32(KeysController.SESSION_KEY_ID) != null ||
+                HttpContext.Session.GetString(AdminController.SESSION_ADMIN_ROLE) != null)
+            {
+                return View();
+            }
+
+            return RedirectToAction("index", "home");
         }
 
-        // POST: Keys/Create
+        // POST: SchoolAccounts/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,keyText,isUsed,key_type,create_date,expiry_date")] Key key)
+        public async Task<IActionResult> Create([Bind("id,name,username,password")] SchoolAccount schoolAccount)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(key);
+                _context.Add(schoolAccount);
                 await _context.SaveChangesAsync();
+
+                if (HttpContext.Session.GetString(KeysController.SESSION_KEY_ID) != null)
+                {
+                    //remove key id if user using key to create school account
+                    HttpContext.Session.SetString(KeysController.SESSION_KEY_ID, null);
+                }
+
                 return RedirectToAction(nameof(Index));
             }
-            return View(key);
+            return View(schoolAccount);
         }
 
-        // GET: Keys/Edit/5
+        // GET: SchoolAccounts/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -101,22 +99,22 @@ namespace SpeedyAPI.Controllers
                 return NotFound();
             }
 
-            var key = await _context.keys.FindAsync(id);
-            if (key == null)
+            var schoolAccount = await _context.SchoolAccounts.FindAsync(id);
+            if (schoolAccount == null)
             {
                 return NotFound();
             }
-            return View(key);
+            return View(schoolAccount);
         }
 
-        // POST: Keys/Edit/5
+        // POST: SchoolAccounts/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id,keyText,isUsed,key_type,create_date,expiry_date")] Key key)
+        public async Task<IActionResult> Edit(int id, [Bind("id,name,username,password")] SchoolAccount schoolAccount)
         {
-            if (id != key.id)
+            if (id != schoolAccount.id)
             {
                 return NotFound();
             }
@@ -125,12 +123,12 @@ namespace SpeedyAPI.Controllers
             {
                 try
                 {
-                    _context.Update(key);
+                    _context.Update(schoolAccount);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!KeyExists(key.id))
+                    if (!SchoolAccountExists(schoolAccount.id))
                     {
                         return NotFound();
                     }
@@ -141,10 +139,10 @@ namespace SpeedyAPI.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(key);
+            return View(schoolAccount);
         }
 
-        // GET: Keys/Delete/5
+        // GET: SchoolAccounts/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -152,30 +150,30 @@ namespace SpeedyAPI.Controllers
                 return NotFound();
             }
 
-            var key = await _context.keys
+            var schoolAccount = await _context.SchoolAccounts
                 .FirstOrDefaultAsync(m => m.id == id);
-            if (key == null)
+            if (schoolAccount == null)
             {
                 return NotFound();
             }
 
-            return View(key);
+            return View(schoolAccount);
         }
 
-        // POST: Keys/Delete/5
+        // POST: SchoolAccounts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var key = await _context.keys.FindAsync(id);
-            _context.keys.Remove(key);
+            var schoolAccount = await _context.SchoolAccounts.FindAsync(id);
+            _context.SchoolAccounts.Remove(schoolAccount);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool KeyExists(int id)
+        private bool SchoolAccountExists(int id)
         {
-            return _context.keys.Any(e => e.id == id);
+            return _context.SchoolAccounts.Any(e => e.id == id);
         }
     }
 }

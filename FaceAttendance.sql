@@ -1,17 +1,18 @@
 create table Keys(
 	id int identity(1,1) primary key not null,
-	keyText varchar(30) not null,
+	keyText varchar(30) not null unique,
 	isUsed bit default 0,
 	key_type varchar(30),
-	create_date date default GETDATE(),
-	expiry_date date
+	create_date datetime default GETDATE(),
+	expiry_date datetime
 )
+
 
 
 create table SchoolAccounts(
 	id int identity(1,1) primary key not null,
 	name nvarchar(100),
-	username nvarchar(30),
+	username nvarchar(30) unique,
 	password nvarchar(30),
 	external_id varchar(100), /* Google login id */
 
@@ -26,7 +27,7 @@ create table Major(
 
 create table TeacherAccounts(
 	id int identity(1,1) primary key not null,
-	email nvarchar(30),
+	email nvarchar(30) unique,
 	password nvarchar(30),
 	external_id varchar(100),
 

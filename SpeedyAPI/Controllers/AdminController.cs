@@ -1,16 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using SpeedyAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SpeedyAPI.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly string SESSION_ROLE = "role";
+        public static readonly string SESSION_ADMIN_ROLE = "role";
+
 
         public IActionResult Index()
         {
-            if (HttpContext.Session.GetString(SESSION_ROLE) == null)
+            if (HttpContext.Session.GetString(SESSION_ADMIN_ROLE) == null)
             {
                 return View("Login");
             }
@@ -20,7 +22,7 @@ namespace SpeedyAPI.Controllers
         [HttpPost]
         public IActionResult Login([Bind("username, password")] Admin admin)
         {
-            if (HttpContext.Session.GetString(SESSION_ROLE) != null)
+            if (HttpContext.Session.GetString(SESSION_ADMIN_ROLE) != null)
             {
                 return View("Index");
             }
@@ -32,7 +34,7 @@ namespace SpeedyAPI.Controllers
 
             if (admin.username.Equals("admin") && admin.password.Equals("admin"))
             {
-                HttpContext.Session.SetString(SESSION_ROLE, "admin");
+                HttpContext.Session.SetString(SESSION_ADMIN_ROLE, "admin");
                 return View("Index");
             }
             else
