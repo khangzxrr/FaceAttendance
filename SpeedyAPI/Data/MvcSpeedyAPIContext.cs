@@ -13,6 +13,8 @@ namespace SpeedyAPI.Data
 
         public DbSet<Key> keys { get; set; }
 
+        public DbSet<SpeedyAPI.Models.Major> Major { get; set; }
+
         
     }
 }

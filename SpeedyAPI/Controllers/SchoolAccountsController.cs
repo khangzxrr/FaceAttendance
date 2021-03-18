@@ -38,6 +38,7 @@ namespace SpeedyAPI.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Login(string username, string password)
         {
             var logginAccount = _context.SchoolAccounts.FirstOrDefault(

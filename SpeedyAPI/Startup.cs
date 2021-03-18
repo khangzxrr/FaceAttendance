@@ -37,6 +37,9 @@ namespace SpeedyAPI
             });
 
 
+            services.AddDbContext<DBMajorContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("speedy")));
+
             services.AddDbContext<MvcSpeedyAPIContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("speedy")));
 
