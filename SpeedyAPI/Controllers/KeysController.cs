@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SpeedyAPI.Data;
 using SpeedyAPI.Models;
+using SpeedyAPI.Extensions;
 
 namespace SpeedyAPI.Controllers
 {
@@ -15,7 +13,7 @@ namespace SpeedyAPI.Controllers
     {
         private readonly MvcSpeedyAPIContext _context;
 
-        public static string SESSION_KEY_ID = "session_key_id";
+        public static string SESSION_USED_KEY = "session_key_id";
 
         public KeysController(MvcSpeedyAPIContext context)
         {
@@ -39,9 +37,9 @@ namespace SpeedyAPI.Controllers
                 ViewBag.error = "Key not found, you can buy one at ...";
                 return View("Use");
             }
-            
-            HttpContext.Session.SetInt32(SESSION_KEY_ID, key.id);
 
+            HttpContext.Session.Set(SESSION_USED_KEY, key);
+            
             return RedirectToAction("Create", "SchoolAccounts");
         }
 

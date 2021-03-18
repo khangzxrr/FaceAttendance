@@ -1,10 +1,11 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpeedyAPI.Data;
 using SpeedyAPI.Models;
+using SpeedyAPI.Extensions;
+using Microsoft.AspNetCore.Http;
 
 namespace SpeedyAPI.Controllers
 {
@@ -12,7 +13,7 @@ namespace SpeedyAPI.Controllers
     {
         private readonly DBSchoolLoginContext _context;
 
-        public static string SCHOOL_ACCOUNT_ID = "school_account_id";
+        public static string SCHOOL_SESSION_ACCOUNT_ID = "school_account_id";
 
         public SchoolAccountsController(DBSchoolLoginContext context)
         {
@@ -25,11 +26,21 @@ namespace SpeedyAPI.Controllers
             if (HttpContext.Session.GetString(AdminController.SESSION_ADMIN_ROLE) == null)
             {
                 return RedirectToAction("Index", "Home");
+            }else
+            if (HttpContext.Session.Get<SchoolAccount>(SCHOOL_SESSION_ACCOUNT_ID) != null)
+            {
+                return RedirectToAction("Manage");
             }
 
             return View(await _context.SchoolAccounts.ToListAsync());
         }
 
+
+        public IActionResult Manage()
+        {
+            ViewBag.schoolName = HttpContext.Session.Get<SchoolAccount>(SCHOOL_SESSION_ACCOUNT_ID).name;
+            return View();
+        }
 
         // GET : SchoolAccounts/Login
         public IActionResult Login()
@@ -46,8 +57,9 @@ namespace SpeedyAPI.Controllers
 
             if (logginAccount != null)
             {
-                HttpContext.Session.SetInt32(SCHOOL_ACCOUNT_ID, logginAccount.id);
-                return View("Manage");
+                HttpContext.Session.Set(SCHOOL_SESSION_ACCOUNT_ID, logginAccount);
+                
+                return RedirectToAction("Manage");
             }
             else
             {
@@ -79,7 +91,7 @@ namespace SpeedyAPI.Controllers
         // GET: SchoolAccounts/Create
         public IActionResult Create()
         {
-            if (HttpContext.Session.GetInt32(KeysController.SESSION_KEY_ID) != null ||
+            if (HttpContext.Session.GetInt32(KeysController.SESSION_USED_KEY) != null ||
                 HttpContext.Session.GetString(AdminController.SESSION_ADMIN_ROLE) != null)
             {
                 return View();
@@ -105,10 +117,10 @@ namespace SpeedyAPI.Controllers
                     _context.Add(schoolAccount);
                     await _context.SaveChangesAsync();
 
-                    if (HttpContext.Session.GetString(KeysController.SESSION_KEY_ID) != null)
+                    if (HttpContext.Session.Get(KeysController.SESSION_USED_KEY) != null)
                     {
                         //remove key id if user using key to create school account
-                        HttpContext.Session.SetString(KeysController.SESSION_KEY_ID, null);
+                        HttpContext.Session.Set(KeysController.SESSION_USED_KEY, null);
                     }
 
                     return RedirectToAction(nameof(Index));

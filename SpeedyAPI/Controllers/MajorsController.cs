@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SpeedyAPI.Data;
 using SpeedyAPI.Models;
@@ -22,7 +20,20 @@ namespace SpeedyAPI.Controllers
         // GET: Majors
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Major.ToListAsync());
+            if (HttpContext.Session.GetString(AdminController.SESSION_ADMIN_ROLE) != null)
+            {
+                return View(await _context.Major.ToListAsync());
+            }
+            else
+            if (HttpContext.Session.GetInt32(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID) != null)
+            {
+                int schoolid = (int)HttpContext.Session.GetInt32(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID);
+                return View(await _context.Major.Where(major => major.school_id == schoolid).ToListAsync());
+            }
+
+            ViewBag.error = "Please login before manage majors";
+
+            return RedirectToAction("Login", "SchoolAccounts");
         }
 
         // GET: Majors/Details/5
