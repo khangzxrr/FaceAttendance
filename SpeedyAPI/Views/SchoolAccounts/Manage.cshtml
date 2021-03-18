@@ -2,6 +2,14 @@
     <h1>
         Hi @ViewBag.schoolName's manager
     </h1>
+    <div class="card" style="width: 18rem;">
+        <img class="card-img-top" src="~/img/online-course.png" alt="Major">
+        <div class="card-body">
+            <h5 class="card-title">Major manage</h5>
+            <p class="card-text">You can add new major here</p>
+            <a asp-controller="Majors" asp-action="Create" class="btn btn-primary">Add new major</a>
+        </div>
+    </div>
 </div>
 
 

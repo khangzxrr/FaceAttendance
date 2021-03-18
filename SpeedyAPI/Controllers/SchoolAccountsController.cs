@@ -38,14 +38,27 @@ namespace SpeedyAPI.Controllers
 
         public IActionResult Manage()
         {
-            ViewBag.schoolName = HttpContext.Session.Get<SchoolAccount>(SCHOOL_SESSION_ACCOUNT_ID).name;
-            return View();
+            if (HttpContext.Session.Get<SchoolAccount>(SCHOOL_SESSION_ACCOUNT_ID) != null)
+            {
+                ViewBag.schoolName = HttpContext.Session.Get<SchoolAccount>(SCHOOL_SESSION_ACCOUNT_ID).name;
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login");
+            }
+            
         }
 
         // GET : SchoolAccounts/Login
         public IActionResult Login()
         {
-            return View();
+            if (HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID) == null)
+            {
+                return View();
+            }
+
+            return RedirectToAction("Manage");
         }
 
         [HttpPost]

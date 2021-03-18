@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpeedyAPI.Data;
+using SpeedyAPI.Extensions;
 using SpeedyAPI.Models;
 
 namespace SpeedyAPI.Controllers
@@ -57,6 +58,12 @@ namespace SpeedyAPI.Controllers
         // GET: Majors/Create
         public IActionResult Create()
         {
+            if (HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID) == null)
+            {
+                return RedirectToAction("Login", "SchoolAccounts");
+            }
+
+            ViewBag.schoolId = HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID).id;
             return View();
         }
 
