@@ -50,6 +50,19 @@ namespace SpeedyAPI.Controllers
             
         }
 
+        //GET: SchoolAccounts/Logout
+        public IActionResult Logout()
+        {
+            if (HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID) == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            HttpContext.Session.Set(SCHOOL_SESSION_ACCOUNT_ID, null);
+
+            return RedirectToAction("Login");
+        }
+
         // GET : SchoolAccounts/Login
         public IActionResult Login()
         {

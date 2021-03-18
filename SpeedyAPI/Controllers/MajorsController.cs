@@ -26,10 +26,10 @@ namespace SpeedyAPI.Controllers
                 return View(await _context.Major.ToListAsync());
             }
             else
-            if (HttpContext.Session.GetInt32(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID) != null)
+            if (HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID) != null)
             {
-                int schoolid = (int)HttpContext.Session.GetInt32(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID);
-                return View(await _context.Major.Where(major => major.school_id == schoolid).ToListAsync());
+                var school = HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID);
+                return View(await _context.Major.Where(major => major.school_id == school.id).ToListAsync());
             }
 
             ViewBag.error = "Please login before manage majors";
