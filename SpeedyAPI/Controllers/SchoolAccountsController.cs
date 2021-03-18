@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SpeedyAPI.Data;
 using SpeedyAPI.Models;
@@ -13,9 +10,11 @@ namespace SpeedyAPI.Controllers
 {
     public class SchoolAccountsController : Controller
     {
-        private readonly MvcSpeedyAPIContext _context;
+        private readonly DBSchoolLoginContext _context;
 
-        public SchoolAccountsController(MvcSpeedyAPIContext context)
+        public static string SCHOOL_ACCOUNT_ID = "school_account_id";
+
+        public SchoolAccountsController(DBSchoolLoginContext context)
         {
             _context = context;
         }
@@ -38,6 +37,26 @@ namespace SpeedyAPI.Controllers
             return View();
         }
 
+        [HttpPost]
+        public IActionResult Login(string username, string password)
+        {
+            var logginAccount = _context.SchoolAccounts.FirstOrDefault(
+                s => s.username == username && s.password == password);
+
+            if (logginAccount != null)
+            {
+                HttpContext.Session.SetInt32(SCHOOL_ACCOUNT_ID, logginAccount.id);
+                return View("Manage");
+            }
+            else
+            {
+                ViewBag.error = "username or password is incorrect, try again";
+            }
+
+            return View();
+        }
+
+      
         // GET: SchoolAccounts/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -77,18 +96,30 @@ namespace SpeedyAPI.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(schoolAccount);
-                await _context.SaveChangesAsync();
+                var existAccount = _context.SchoolAccounts.FirstOrDefault(s => s.username == schoolAccount.username);
 
-                if (HttpContext.Session.GetString(KeysController.SESSION_KEY_ID) != null)
+                if (existAccount == null)
                 {
-                    //remove key id if user using key to create school account
-                    HttpContext.Session.SetString(KeysController.SESSION_KEY_ID, null);
-                }
 
-                return RedirectToAction(nameof(Index));
+                    _context.Add(schoolAccount);
+                    await _context.SaveChangesAsync();
+
+                    if (HttpContext.Session.GetString(KeysController.SESSION_KEY_ID) != null)
+                    {
+                        //remove key id if user using key to create school account
+                        HttpContext.Session.SetString(KeysController.SESSION_KEY_ID, null);
+                    }
+
+                    return RedirectToAction(nameof(Index));
+
+                }
+                else
+                {
+                    ViewBag.error = "Username is exist, please choose another one";
+                }
             }
-            return View(schoolAccount);
+
+            return View();
         }
 
         // GET: SchoolAccounts/Edit/5

@@ -39,6 +39,9 @@ namespace SpeedyAPI
 
             services.AddDbContext<MvcSpeedyAPIContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("speedy")));
+
+            services.AddDbContext<DBSchoolLoginContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("speedy")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

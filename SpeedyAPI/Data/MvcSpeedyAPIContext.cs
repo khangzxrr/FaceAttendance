@@ -13,6 +13,6 @@ namespace SpeedyAPI.Data
 
         public DbSet<Key> keys { get; set; }
 
-        public DbSet<SchoolAccount> SchoolAccounts { get; set; }
+        
     }
 }
