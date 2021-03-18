@@ -6,6 +6,7 @@ using SpeedyAPI.Data;
 using SpeedyAPI.Models;
 using SpeedyAPI.Extensions;
 using Microsoft.AspNetCore.Http;
+using System;
 
 namespace SpeedyAPI.Controllers
 {
@@ -38,9 +39,20 @@ namespace SpeedyAPI.Controllers
 
         public IActionResult Manage()
         {
-            if (HttpContext.Session.Get<SchoolAccount>(SCHOOL_SESSION_ACCOUNT_ID) != null)
+            var school = HttpContext.Session.Get<SchoolAccount>(SCHOOL_SESSION_ACCOUNT_ID);
+            if (school != null)
             {
-                ViewBag.schoolName = HttpContext.Session.Get<SchoolAccount>(SCHOOL_SESSION_ACCOUNT_ID).name;
+                ViewBag.schoolName = school.name;
+
+                ViewBag.schoolMajorsCount = _context.SchoolAccounts
+                                    .Where(s => s.id == school.id)
+                                    .Include(s => s.Majors).Count();
+                
+                //ViewBag.majorsCount =_context.Entry(school)
+                //                            .Collection(school => school.majors)
+                //                            .Query()
+                //                            .Count();   
+                        
                 return View();
             }
             else

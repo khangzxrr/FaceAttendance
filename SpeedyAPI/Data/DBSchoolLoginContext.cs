@@ -14,5 +14,6 @@ namespace SpeedyAPI.Data
         }
 
         public DbSet<SchoolAccount> SchoolAccounts { get; set; }
+        public DbSet<Major> Majors { get; set; }
     }
 }

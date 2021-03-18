@@ -15,6 +15,6 @@ namespace SpeedyAPI.Models
         [MaxLength(30)]
         public string password { get; set; }
 
-        public List<Major> majors { get; set;}
+        public List<Major> Majors { get; set;}
     }
 }
