@@ -22,7 +22,7 @@ create table SchoolAccounts(
 create table Major(
 	id int identity(1,1) primary key not null,
 	school_id int foreign key references SchoolAccounts(id),
-	startDate datetime
+	startDate datetime,
 	name nvarchar(100)
 )
 
