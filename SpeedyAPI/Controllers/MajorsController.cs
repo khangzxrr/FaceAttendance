@@ -12,9 +12,9 @@ namespace SpeedyAPI.Controllers
 {
     public class MajorsController : Controller
     {
-        private readonly MvcSpeedyAPIContext _context;
+        private readonly DBMajorContext _context;
 
-        public MajorsController(MvcSpeedyAPIContext context)
+        public MajorsController(DBMajorContext context)
         {
             _context = context;
         }
@@ -38,6 +38,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: Majors/Details/5
+        [SchoolManageFilter]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -56,13 +57,9 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: Majors/Create
+        [SchoolManageFilter]
         public IActionResult Create()
         {
-            if (HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID) == null)
-            {
-                return RedirectToAction("Login", "SchoolAccounts");
-            }
-
             ViewBag.schoolId = HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID).id;
             return View();
         }
@@ -72,6 +69,7 @@ namespace SpeedyAPI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [SchoolManageFilter]
         public async Task<IActionResult> Create([Bind("id,school_id,name,startDate")] Major major)
         {
             if (ModelState.IsValid)
@@ -84,6 +82,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: Majors/Edit/5
+        [SchoolManageFilter]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -104,6 +103,7 @@ namespace SpeedyAPI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [SchoolManageFilter]
         public async Task<IActionResult> Edit(int id, [Bind("id,school_id,name,startDate")] Major major)
         {
             if (id != major.id)
@@ -135,6 +135,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: Majors/Delete/5
+        [SchoolManageFilter]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -155,6 +156,7 @@ namespace SpeedyAPI.Controllers
         // POST: Majors/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [SchoolManageFilter]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var major = await _context.Majors.FindAsync(id);

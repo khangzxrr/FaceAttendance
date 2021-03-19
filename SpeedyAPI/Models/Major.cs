@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SpeedyAPI.Models
 {
+    [Table("Majors")]
     public class Major
     {
         public int id { get; set; }
@@ -16,7 +17,5 @@ namespace SpeedyAPI.Models
         public string name { get; set; }
         [Required]
         public DateTime startDate { get; set; }
-
-        public List<Student> Students;
     }
 }

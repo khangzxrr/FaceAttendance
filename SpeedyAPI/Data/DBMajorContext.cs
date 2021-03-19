@@ -11,6 +11,11 @@ namespace SpeedyAPI.Data
 
         }
 
-        public DbSet<Major> majors { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Major>().ToTable("Majors");
+        }
+
+        public DbSet<Major> Majors { get; set; }
     }
 }

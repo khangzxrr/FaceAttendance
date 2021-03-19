@@ -11,11 +11,11 @@ namespace SpeedyAPI.Controllers
 {
     public class KeysController : Controller
     {
-        private readonly MvcSpeedyAPIContext _context;
+        private readonly DBKeyContext _context;
 
         public static string SESSION_USED_KEY = "session_key_id";
 
-        public KeysController(MvcSpeedyAPIContext context)
+        public KeysController(DBKeyContext context)
         {
             _context = context;
         }
@@ -30,7 +30,7 @@ namespace SpeedyAPI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Use(string keyText)
         {
-            var key = await _context.keys.FirstOrDefaultAsync(m => m.keyText.Equals(keyText));
+            var key = await _context.Keys.FirstOrDefaultAsync(m => m.keyText.Equals(keyText));
 
             if (key == null)
             {
@@ -47,7 +47,7 @@ namespace SpeedyAPI.Controllers
         // GET: Keys
         public async Task<IActionResult> Index()
         {
-            return View(await _context.keys.ToListAsync());
+            return View(await _context.Keys.ToListAsync());
         }
 
         // GET: Keys/Details/5
@@ -58,7 +58,7 @@ namespace SpeedyAPI.Controllers
                 return NotFound();
             }
 
-            var key = await _context.keys
+            var key = await _context.Keys
                 .FirstOrDefaultAsync(m => m.id == id);
             if (key == null)
             {
@@ -99,7 +99,7 @@ namespace SpeedyAPI.Controllers
                 return NotFound();
             }
 
-            var key = await _context.keys.FindAsync(id);
+            var key = await _context.Keys.FindAsync(id);
             if (key == null)
             {
                 return NotFound();
@@ -150,7 +150,7 @@ namespace SpeedyAPI.Controllers
                 return NotFound();
             }
 
-            var key = await _context.keys
+            var key = await _context.Keys
                 .FirstOrDefaultAsync(m => m.id == id);
             if (key == null)
             {
@@ -165,15 +165,15 @@ namespace SpeedyAPI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var key = await _context.keys.FindAsync(id);
-            _context.keys.Remove(key);
+            var key = await _context.Keys.FindAsync(id);
+            _context.Keys.Remove(key);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool KeyExists(int id)
         {
-            return _context.keys.Any(e => e.id == id);
+            return _context.Keys.Any(e => e.id == id);
         }
     }
 }

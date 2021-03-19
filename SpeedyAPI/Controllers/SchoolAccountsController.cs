@@ -45,15 +45,15 @@ namespace SpeedyAPI.Controllers
 
             ViewBag.schoolName = school.name;
 
-            ViewBag.schoolMajorsCount = _context.SchoolAccounts
-                                .Where(s => s.id == school.id)
-                                .Include(s => s.Majors)
-                                .Count();
-
-            ViewBag.schoolStudentsCount = _context.SchoolAccounts
-                                  .Where(s => s.id == school.id)
-                                  .Include(s => s.Students)
-                                  .Count();
+            ViewBag.majorsCount = _context.SchoolAccounts
+                                            .Where(s => s.id == school.id)
+                                            .Include(s => s.Majors)
+                                            .FirstOrDefault().Majors.Count;
+            ViewBag.studentsCount = _context.SchoolAccounts
+                                            .Where(s => s.id == school.id)
+                                            .Include(s => s.Students)
+                                            .FirstOrDefault().Students.Count;
+            //var test2 = _context.SchoolAccounts.Ent
 
             return View();
 

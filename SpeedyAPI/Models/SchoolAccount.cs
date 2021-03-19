@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SpeedyAPI.Models
 {
+    [Table("SchoolAccounts")]
     public class SchoolAccount
     {
         public int id { get; set; }
@@ -15,7 +17,9 @@ namespace SpeedyAPI.Models
         [MaxLength(30)]
         public string password { get; set; }
 
+        [ForeignKey("school_id")]
         public List<Major> Majors { get; set;}
+        [ForeignKey("school_id")]
         public List<Student> Students { get; set; }
     }
 }
