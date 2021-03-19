@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -15,5 +16,7 @@ namespace SpeedyAPI.Models
         public string name { get; set; }
         [Required]
         public DateTime startDate { get; set; }
+
+        public List<Student> Students;
     }
 }

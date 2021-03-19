@@ -46,7 +46,8 @@ namespace SpeedyAPI.Controllers
 
                 ViewBag.schoolMajorsCount = _context.SchoolAccounts
                                     .Where(s => s.id == school.id)
-                                    .Include(s => s.Majors).Count();
+                                    .Include(s => s.Majors)
+                                    
 
                         
                 return View();
