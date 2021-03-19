@@ -1,6 +1,8 @@
 ###################
 # compiled source #
 ###################
+appsettings.json
+
 *.com
 *.class
 *.dll
