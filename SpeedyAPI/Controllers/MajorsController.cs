@@ -23,13 +23,13 @@ namespace SpeedyAPI.Controllers
         {
             if (HttpContext.Session.GetString(AdminController.SESSION_ADMIN_ROLE) != null)
             {
-                return View(await _context.Major.ToListAsync());
+                return View(await _context.Majors.ToListAsync());
             }
             else
             if (HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID) != null)
             {
                 var school = HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID);
-                return View(await _context.Major.Where(major => major.school_id == school.id).ToListAsync());
+                return View(await _context.Majors.Where(major => major.school_id == school.id).ToListAsync());
             }
 
             ViewBag.error = "Please login before manage majors";
@@ -45,7 +45,7 @@ namespace SpeedyAPI.Controllers
                 return NotFound();
             }
 
-            var major = await _context.Major
+            var major = await _context.Majors
                 .FirstOrDefaultAsync(m => m.id == id);
             if (major == null)
             {
@@ -91,7 +91,7 @@ namespace SpeedyAPI.Controllers
                 return NotFound();
             }
 
-            var major = await _context.Major.FindAsync(id);
+            var major = await _context.Majors.FindAsync(id);
             if (major == null)
             {
                 return NotFound();
@@ -142,7 +142,7 @@ namespace SpeedyAPI.Controllers
                 return NotFound();
             }
 
-            var major = await _context.Major
+            var major = await _context.Majors
                 .FirstOrDefaultAsync(m => m.id == id);
             if (major == null)
             {
@@ -157,15 +157,15 @@ namespace SpeedyAPI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var major = await _context.Major.FindAsync(id);
-            _context.Major.Remove(major);
+            var major = await _context.Majors.FindAsync(id);
+            _context.Majors.Remove(major);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool MajorExists(int id)
         {
-            return _context.Major.Any(e => e.id == id);
+            return _context.Majors.Any(e => e.id == id);
         }
     }
 }
