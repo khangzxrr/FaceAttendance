@@ -15,5 +15,8 @@ namespace SpeedyAPI.Models
         [Required]
         [DataType(DataType.Date)]
         public DateTime date_of_birth { get; set; }
+
+        [Required]
+        public int school_id { get; set; }
     }
 }

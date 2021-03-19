@@ -22,7 +22,8 @@
                 <div class="card-body">
                     <h5 class="card-title">Students manage</h5>
                     <p class="card-text">You can manage students here</p>
-                    <a asp-controller="Majors" asp-action="Index" class="btn btn-primary">Students manage panel</a>
+                    <p class="card-text">Total majors: @ViewBag.schoolStudentsCount</p>
+                    <a asp-controller="Students" asp-action="Index" class="btn btn-primary">Students manage panel</a>
                 </div>
             </div>
         </div>

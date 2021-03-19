@@ -16,5 +16,6 @@ namespace SpeedyAPI.Models
         public string password { get; set; }
 
         public List<Major> Majors { get; set;}
+        public List<Student> Students { get; set; }
     }
 }
