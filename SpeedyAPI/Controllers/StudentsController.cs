@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpeedyAPI.Data;
@@ -20,10 +21,23 @@ namespace SpeedyAPI.Controllers
         // GET: Students
         public async Task<IActionResult> Index()
         {
+            var school = HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID);
 
+            if (school != null)
+            {
+                return View(await _context.Students.Where(s => s.school_id == school.id).ToListAsync());
+            }
+            else
+            if (HttpContext.Session.GetString(AdminController.SESSION_ADMIN_ROLE) != null)
+            {
+                return View(await _context.Students.ToListAsync());
+            }
+            else
+            {
+                return RedirectToAction("Login", "SchoolAccounts");
+            }
 
-
-            return View(await _context.Students.ToListAsync());
+            
         }
 
         // GET: Students/Details/5

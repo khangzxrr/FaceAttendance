@@ -19,7 +19,7 @@ create table SchoolAccounts(
 	key_id int foreign key references Keys(id)
 )
 
-create table Major(
+create table Majors(
 	id int identity(1,1) primary key not null,
 	school_id int foreign key references SchoolAccounts(id),
 	startDate datetime,
@@ -48,7 +48,8 @@ create table Subjects(
 create table Students(
 	id int identity(1,1) primary key not null,
 	name nvarchar(100),
-	date_of_birth date 
+	date_of_birth date,
+	school_id int foreign key references SchoolAccounts(id)
 )
 
 

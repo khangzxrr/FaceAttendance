@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpeedyAPI.Data;
 using SpeedyAPI.Extensions;
+using SpeedyAPI.Filters;
 using SpeedyAPI.Models;
 
 namespace SpeedyAPI.Controllers
@@ -19,6 +20,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: Majors
+        [SchoolManageFilter]
         public async Task<IActionResult> Index()
         {
             if (HttpContext.Session.GetString(AdminController.SESSION_ADMIN_ROLE) != null)
@@ -32,9 +34,7 @@ namespace SpeedyAPI.Controllers
                 return View(await _context.Majors.Where(major => major.school_id == school.id).ToListAsync());
             }
 
-            ViewBag.error = "Please login before manage majors";
-
-            return RedirectToAction("Login", "SchoolAccounts");
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: Majors/Details/5

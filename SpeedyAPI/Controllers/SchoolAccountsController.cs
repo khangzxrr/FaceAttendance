@@ -6,6 +6,7 @@ using SpeedyAPI.Data;
 using SpeedyAPI.Models;
 using SpeedyAPI.Extensions;
 using Microsoft.AspNetCore.Http;
+using SpeedyAPI.Filters;
 
 namespace SpeedyAPI.Controllers
 {
@@ -21,6 +22,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: SchoolAccounts
+        [SchoolManageFilter]
         public async Task<IActionResult> Index()
         {
             if (HttpContext.Session.GetString(AdminController.SESSION_ADMIN_ROLE) == null)
@@ -36,40 +38,31 @@ namespace SpeedyAPI.Controllers
         }
 
 
+        [SchoolManageFilter]
         public IActionResult Manage()
         {
             var school = HttpContext.Session.Get<SchoolAccount>(SCHOOL_SESSION_ACCOUNT_ID);
-            if (school != null)
-            {
-                ViewBag.schoolName = school.name;
 
-                ViewBag.schoolMajorsCount = _context.SchoolAccounts
-                                    .Where(s => s.id == school.id)
-                                    .Include(s => s.Majors)
-                                    .Count();
+            ViewBag.schoolName = school.name;
 
-                ViewBag.schoolStudentsCount = _context.SchoolAccounts
-                                      .Where(s => s.id == school.id)
-                                      .Include(s => s.Students)
-                                      .Count();
+            ViewBag.schoolMajorsCount = _context.SchoolAccounts
+                                .Where(s => s.id == school.id)
+                                .Include(s => s.Majors)
+                                .Count();
 
-                return View();
-            }
-            else
-            {
-                return RedirectToAction("Login");
-            }
-            
+            ViewBag.schoolStudentsCount = _context.SchoolAccounts
+                                  .Where(s => s.id == school.id)
+                                  .Include(s => s.Students)
+                                  .Count();
+
+            return View();
+
         }
 
         //GET: SchoolAccounts/Logout
+        [SchoolManageFilter]
         public IActionResult Logout()
         {
-            if (HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID) == null)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
             HttpContext.Session.Set(SCHOOL_SESSION_ACCOUNT_ID, null);
 
             return RedirectToAction("Login");
@@ -109,6 +102,7 @@ namespace SpeedyAPI.Controllers
 
       
         // GET: SchoolAccounts/Details/5
+        [SchoolManageFilter]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -127,15 +121,11 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: SchoolAccounts/Create
+        [SchoolManageFilter]
         public IActionResult Create()
         {
-            if (HttpContext.Session.GetInt32(KeysController.SESSION_USED_KEY) != null ||
-                HttpContext.Session.GetString(AdminController.SESSION_ADMIN_ROLE) != null)
-            {
-                return View();
-            }
+            return View();
 
-            return RedirectToAction("index", "home");
         }
 
         // POST: SchoolAccounts/Create
@@ -143,6 +133,7 @@ namespace SpeedyAPI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [SchoolManageFilter]
         public async Task<IActionResult> Create([Bind("id,name,username,password")] SchoolAccount schoolAccount)
         {
             if (ModelState.IsValid)
@@ -175,6 +166,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: SchoolAccounts/Edit/5
+        [SchoolManageFilter]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -195,6 +187,7 @@ namespace SpeedyAPI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [SchoolManageFilter]
         public async Task<IActionResult> Edit(int id, [Bind("id,name,username,password")] SchoolAccount schoolAccount)
         {
             if (id != schoolAccount.id)
@@ -226,6 +219,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: SchoolAccounts/Delete/5
+        [SchoolManageFilter]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -246,6 +240,7 @@ namespace SpeedyAPI.Controllers
         // POST: SchoolAccounts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [SchoolManageFilter]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var schoolAccount = await _context.SchoolAccounts.FindAsync(id);
