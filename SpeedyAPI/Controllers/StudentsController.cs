@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SpeedyAPI.Data;
+using SpeedyAPI.Extensions;
 using SpeedyAPI.Models;
 
 namespace SpeedyAPI.Controllers
@@ -22,6 +20,9 @@ namespace SpeedyAPI.Controllers
         // GET: Students
         public async Task<IActionResult> Index()
         {
+
+
+
             return View(await _context.Students.ToListAsync());
         }
 

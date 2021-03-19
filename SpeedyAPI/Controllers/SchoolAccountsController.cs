@@ -6,7 +6,6 @@ using SpeedyAPI.Data;
 using SpeedyAPI.Models;
 using SpeedyAPI.Extensions;
 using Microsoft.AspNetCore.Http;
-using System;
 
 namespace SpeedyAPI.Controllers
 {

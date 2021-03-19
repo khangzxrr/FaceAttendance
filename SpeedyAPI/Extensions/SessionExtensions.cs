@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
+using SpeedyAPI.Controllers;
+using SpeedyAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +20,12 @@ namespace SpeedyAPI.Extensions
         {
             var value = session.GetString(key);
             return value == null ? default : JsonSerializer.Deserialize<T>(value);
+        }
+
+        public static SchoolAccount GetSchoolAccountSession(this ISession session)
+        {
+            var data = session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID);
+            return data;
         }
     }
 }
