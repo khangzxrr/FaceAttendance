@@ -154,7 +154,8 @@ namespace SpeedyAPI.Controllers
                     if (HttpContext.Session.Get(KeysController.SESSION_USED_KEY) != null)
                     {
                         //remove key id if user using key to create school account
-                        HttpContext.Session.Set(KeysController.SESSION_USED_KEY, null);
+                        //HttpContext.Session.Set(KeysController.SESSION_USED_KEY, null);
+                        HttpContext.Session.Remove(KeysController.SESSION_USED_KEY);
                     }
 
                     return RedirectToAction(nameof(Index));
