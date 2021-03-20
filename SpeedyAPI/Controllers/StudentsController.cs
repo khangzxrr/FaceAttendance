@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpeedyAPI.Data;
 using SpeedyAPI.Extensions;
+using SpeedyAPI.Filters;
 using SpeedyAPI.Models;
 
 namespace SpeedyAPI.Controllers
@@ -19,6 +20,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: Students
+        [SchoolManageFilter]
         public async Task<IActionResult> Index()
         {
             var school = HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID);
@@ -41,6 +43,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: Students/Details/5
+        [SchoolManageFilter]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -59,8 +62,13 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: Students/Create
+        [SchoolManageFilter]
         public IActionResult Create()
         {
+            var school = HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID);
+
+            ViewBag.schoolId = school.id;
+
             return View();
         }
 

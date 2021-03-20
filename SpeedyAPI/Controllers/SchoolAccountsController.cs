@@ -53,7 +53,11 @@ namespace SpeedyAPI.Controllers
                                             .Where(s => s.id == school.id)
                                             .Include(s => s.Students)
                                             .FirstOrDefault().Students.Count;
-            //var test2 = _context.SchoolAccounts.Ent
+
+            ViewBag.teachersCount = _context.SchoolAccounts
+                                            .Where(s => s.id == school.id)
+                                            .Include(s => s.TeacherAccounts)
+                                            .FirstOrDefault().TeacherAccounts.Count;
 
             return View();
 

@@ -38,10 +38,9 @@ create table TeacherAccounts(
 
 create table Subjects(
 	id int identity(1,1) primary key not null,
-	start_date datetime not null,
 	name nvarchar(100),
 	room nvarchar(100) not null,
-	major_id int foreign key references Major(id) not null,
+	major_id int foreign key references Majors(id) not null,
 	teacher_observer int foreign key references TeacherAccounts(id)
 )
 

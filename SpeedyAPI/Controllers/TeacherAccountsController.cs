@@ -10,34 +10,30 @@ using SpeedyAPI.Models;
 
 namespace SpeedyAPI.Controllers
 {
-    public class MajorsController : Controller
+    public class TeacherAccountsController : Controller
     {
-        private readonly DBMajorContext _context;
+        private readonly DBTeacherContext _context;
 
-        public MajorsController(DBMajorContext context)
+        public TeacherAccountsController(DBTeacherContext context)
         {
             _context = context;
         }
 
-        // GET: Majors
+        // GET: TeacherAccounts
         [SchoolManageFilter]
         public async Task<IActionResult> Index()
         {
-            if (HttpContext.Session.GetString(AdminController.SESSION_ADMIN_ROLE) != null)
+            var school = HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID);
+
+            if (school != null)
             {
-                return View(await _context.Majors.ToListAsync());
-            }
-            else
-            if (HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID) != null)
-            {
-                var school = HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID);
-                return View(await _context.Majors.Where(major => major.school_id == school.id).ToListAsync());
+                return View(await _context.TeacherAccount.Where(t => t.teach_in_school == school.id).ToListAsync());
             }
 
-            return RedirectToAction("Index", "Home");
+            return View(await _context.TeacherAccount.ToListAsync());
         }
 
-        // GET: Majors/Details/5
+        // GET: TeacherAccounts/Details/5
         [SchoolManageFilter]
         public async Task<IActionResult> Details(int? id)
         {
@@ -46,42 +42,44 @@ namespace SpeedyAPI.Controllers
                 return NotFound();
             }
 
-            var major = await _context.Majors
+            var teacherAccount = await _context.TeacherAccount
                 .FirstOrDefaultAsync(m => m.id == id);
-            if (major == null)
+            if (teacherAccount == null)
             {
                 return NotFound();
             }
 
-            return View(major);
+            return View(teacherAccount);
         }
 
-        // GET: Majors/Create
+        // GET: TeacherAccounts/Create
         [SchoolManageFilter]
         public IActionResult Create()
         {
-            ViewBag.schoolId = HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID).id;
+            var school = HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID);
+            ViewBag.schoolID = school.id;
+
             return View();
         }
 
-        // POST: Majors/Create
+        // POST: TeacherAccounts/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [SchoolManageFilter]
-        public async Task<IActionResult> Create([Bind("id,school_id,name,startDate")] Major major)
+        public async Task<IActionResult> Create([Bind("id,email,password,teach_in_school")] TeacherAccount teacherAccount)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(major);
+                _context.Add(teacherAccount);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(major);
+            return View(teacherAccount);
         }
 
-        // GET: Majors/Edit/5
+        // GET: TeacherAccounts/Edit/5
         [SchoolManageFilter]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -90,23 +88,23 @@ namespace SpeedyAPI.Controllers
                 return NotFound();
             }
 
-            var major = await _context.Majors.FindAsync(id);
-            if (major == null)
+            var teacherAccount = await _context.TeacherAccount.FindAsync(id);
+            if (teacherAccount == null)
             {
                 return NotFound();
             }
-            return View(major);
+            return View(teacherAccount);
         }
 
-        // POST: Majors/Edit/5
+        // POST: TeacherAccounts/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [SchoolManageFilter]
-        public async Task<IActionResult> Edit(int id, [Bind("id,school_id,name,startDate")] Major major)
+        public async Task<IActionResult> Edit(int id, [Bind("id,email,password,teach_in_school")] TeacherAccount teacherAccount)
         {
-            if (id != major.id)
+            if (id != teacherAccount.id)
             {
                 return NotFound();
             }
@@ -115,12 +113,12 @@ namespace SpeedyAPI.Controllers
             {
                 try
                 {
-                    _context.Update(major);
+                    _context.Update(teacherAccount);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MajorExists(major.id))
+                    if (!TeacherAccountExists(teacherAccount.id))
                     {
                         return NotFound();
                     }
@@ -131,10 +129,10 @@ namespace SpeedyAPI.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(major);
+            return View(teacherAccount);
         }
 
-        // GET: Majors/Delete/5
+        // GET: TeacherAccounts/Delete/5
         [SchoolManageFilter]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -143,50 +141,31 @@ namespace SpeedyAPI.Controllers
                 return NotFound();
             }
 
-            var major = await _context.Majors
+            var teacherAccount = await _context.TeacherAccount
                 .FirstOrDefaultAsync(m => m.id == id);
-            if (major == null)
+            if (teacherAccount == null)
             {
                 return NotFound();
             }
 
-            return View(major);
+            return View(teacherAccount);
         }
 
-        // POST: Majors/Delete/5
+        // POST: TeacherAccounts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [SchoolManageFilter]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var major = await _context.Majors.FindAsync(id);
-            _context.Majors.Remove(major);
+            var teacherAccount = await _context.TeacherAccount.FindAsync(id);
+            _context.TeacherAccount.Remove(teacherAccount);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpGet]
-        [SchoolManageFilter]
-        public async Task<IActionResult> AddStudents(int? id)
+        private bool TeacherAccountExists(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var major = await _context.Majors
-               .FirstOrDefaultAsync(m => m.id == id);
-            if (major == null)
-            {
-                return NotFound();
-            }
-
-            return View(major);
-        }
-
-        private bool MajorExists(int id)
-        {
-            return _context.Majors.Any(e => e.id == id);
+            return _context.TeacherAccount.Any(e => e.id == id);
         }
     }
 }

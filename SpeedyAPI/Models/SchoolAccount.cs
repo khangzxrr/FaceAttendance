@@ -19,7 +19,11 @@ namespace SpeedyAPI.Models
 
         [ForeignKey("school_id")]
         public List<Major> Majors { get; set;}
+
         [ForeignKey("school_id")]
         public List<Student> Students { get; set; }
+
+        [ForeignKey("teach_in_school")]
+        public List<TeacherAccount> TeacherAccounts { get; set; }
     }
 }

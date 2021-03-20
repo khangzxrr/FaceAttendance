@@ -42,7 +42,8 @@
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
+                    <a asp-action="Delete" asp-route-id="@item.id">Delete</a> |
+                    <a asp-action="Subjects" asp-route-id="@item.id" asp-route-majorname="@item.name">Add subjects</a>
                 </td>
             </tr>
         }

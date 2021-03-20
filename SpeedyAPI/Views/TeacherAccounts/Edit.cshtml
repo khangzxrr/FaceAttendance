@@ -1,4 +1,4 @@
-﻿@model SpeedyAPI.Models.Student
+﻿@model SpeedyAPI.Models.TeacherAccount
 
 @{
     ViewData["Title"] = "Edit";
@@ -7,7 +7,7 @@
 
 <h1>Edit</h1>
 
-<h4>Student</h4>
+<h4>TeacherAccount</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -15,19 +15,19 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="id" />
             <div class="form-group">
-                <label asp-for="name" class="control-label"></label>
-                <input asp-for="name" class="form-control" />
-                <span asp-validation-for="name" class="text-danger"></span>
+                <label asp-for="email" class="control-label"></label>
+                <input asp-for="email" class="form-control" />
+                <span asp-validation-for="email" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="date_of_birth" class="control-label"></label>
-                <input asp-for="date_of_birth" class="form-control" />
-                <span asp-validation-for="date_of_birth" class="text-danger"></span>
+                <label asp-for="password" class="control-label"></label>
+                <input asp-for="password" class="form-control" />
+                <span asp-validation-for="password" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="school_id" class="control-label"></label>
-                <input asp-for="school_id" readonly class="form-control" />
-                <span asp-validation-for="school_id" class="text-danger"></span>
+                <label asp-for="teach_in_school" class="control-label"></label>
+                <input asp-for="teach_in_school" readonly class="form-control" />
+                <span asp-validation-for="teach_in_school" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
