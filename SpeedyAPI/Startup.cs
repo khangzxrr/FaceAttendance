@@ -35,6 +35,8 @@ namespace SpeedyAPI
 
             services.AddHttpContextAccessor(); //allow use httpcontext in view
 
+            services.AddDbContext<DBSubjectContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("speedy")));
 
             services.AddDbContext<DBTeacherContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("speedy")));
