@@ -1,8 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpeedyAPI.Data;
+using SpeedyAPI.Extensions;
+using SpeedyAPI.Filters;
 using SpeedyAPI.Models;
 
 namespace SpeedyAPI.Controllers
@@ -10,30 +14,59 @@ namespace SpeedyAPI.Controllers
     public class SubjectsController : Controller
     {
         private readonly DBSubjectContext _context;
+        private readonly DBTeacherContext teacherContext;
 
-        public SubjectsController(DBSubjectContext context)
+        public string MAJOR_DETAIL_COOKIE = "MAJOR_DETAIL_COOKIE";
+
+        public SubjectsController(DBSubjectContext context, DBTeacherContext teacherContext)
         {
             _context = context;
+            this.teacherContext = teacherContext;
         }
 
         // GET: Subjects
-        public async Task<IActionResult> Index(int? id, string? name)
+        [SchoolManageFilter]
+        public async Task<IActionResult> Index(int? id, string? majorName)
         {
-            if (id == null)
+            //id majorName != null  => setcookie
+            //id majorName == null => getFromCookie
+            //id majorName != null but different from cookies => re-setcookie
+
+            if ((id == null || majorName == null) && HttpContext.Request.Cookies[MAJOR_DETAIL_COOKIE] == null)
             {
-                return NotFound();
+                return RedirectToAction("Index", "Majors");
             }
 
-            if(name != null)
+            if (HttpContext.Request.Cookies[MAJOR_DETAIL_COOKIE] == null)
             {
-
+                HttpContext.Response.Cookies.Append(MAJOR_DETAIL_COOKIE, id + "|" + majorName,
+                                               new CookieOptions()
+                                               {
+                                                   Expires = DateTime.Now.AddMinutes(30)
+                                               });
+                return RedirectToAction("Index", new { id = id, majorName = majorName });
             }
 
 
-            return View(await _context.Subjects.ToListAsync());
+            var majorDataStr = HttpContext.Request.Cookies[MAJOR_DETAIL_COOKIE].Split("|");
+            var cookieMajorId = int.Parse(majorDataStr[0]);
+            var cookieMajorName = majorDataStr[1];
+
+            ViewBag.majorId = int.Parse(majorDataStr[0]);
+            ViewBag.majorName = majorDataStr[1];
+            
+            if (id != null && id != int.Parse(majorDataStr[0])) //if different id from cookie and parameter
+            {
+                HttpContext.Response.Cookies.Delete(MAJOR_DETAIL_COOKIE);
+                return RedirectToAction("Index", new { id = id, majorName = majorName });
+            }
+
+
+            return View(await _context.Subjects.Where(s => s.major_id == cookieMajorId).ToListAsync());
         }
 
         // GET: Subjects/Details/5
+        [SchoolManageFilter]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -52,9 +85,18 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: Subjects/Create
-        public IActionResult Create()
+        [SchoolManageFilter]
+        public IActionResult Create(int? majorId)
         {
-            return View();
+            var school = HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID);
+            ViewBag.majorId = majorId;
+            ViewBag.teachers = teacherContext.TeacherAccount
+                                                .Where(t => t.teach_in_school == school.id)
+                                                .ToList();
+
+            var initModel = new Subject();
+            initModel.major_id = (int)majorId;
+            return View(initModel);
         }
 
         // POST: Subjects/Create
@@ -62,18 +104,32 @@ namespace SpeedyAPI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,name,major_id,teacher_observer")] Subject subject)
+        [SchoolManageFilter]
+        public async Task<IActionResult> Create([Bind("id,name,room,major_id,teacher_observer")] Subject subject)
         {
+
             if (ModelState.IsValid)
             {
+                var school = HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID);
+                ViewBag.teachers = teacherContext.TeacherAccount
+                                                    .Where(t => t.teach_in_school == school.id)
+                                                    .ToList();
+
+                if (subject.teacher_observer == -1)
+                {
+                    ViewBag.error = "Please select observer teacher";
+                    return View(subject);
+                }
+
                 _context.Add(subject);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", new { id = subject.major_id });
             }
             return View(subject);
         }
 
         // GET: Subjects/Edit/5
+        [SchoolManageFilter]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -94,7 +150,8 @@ namespace SpeedyAPI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id,name,major_id,teacher_observer")] Subject subject)
+        [SchoolManageFilter]
+        public async Task<IActionResult> Edit(int id, [Bind("id,name,room,major_id,teacher_observer")] Subject subject)
         {
             if (id != subject.id)
             {
@@ -125,6 +182,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: Subjects/Delete/5
+        [SchoolManageFilter]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -145,6 +203,7 @@ namespace SpeedyAPI.Controllers
         // POST: Subjects/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [SchoolManageFilter]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var subject = await _context.Subjects.FindAsync(id);

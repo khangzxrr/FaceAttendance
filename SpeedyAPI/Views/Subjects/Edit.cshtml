@@ -20,8 +20,13 @@
                 <span asp-validation-for="name" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="room" class="control-label"></label>
+                <input asp-for="room" class="form-control" />
+                <span asp-validation-for="room" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="major_id" class="control-label"></label>
-                <input asp-for="major_id" class="form-control" />
+                <input asp-for="major_id" class="form-control" readonly />
                 <span asp-validation-for="major_id" class="text-danger"></span>
             </div>
             <div class="form-group">
