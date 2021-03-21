@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SpeedyAPI.Models.Student>
+﻿@model IEnumerable<SpeedyAPI.Models.Attendance>
 
 @{
     ViewData["Title"] = "Index";
@@ -14,10 +14,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.name)
+                @Html.DisplayNameFor(model => model.id_subject)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.date_of_birth)
+                @Html.DisplayNameFor(model => model.id_student)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.checkin)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.checkout)
             </th>
             <th></th>
         </tr>
@@ -26,10 +32,16 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.name)
+                @Html.DisplayFor(modelItem => item.id_subject)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.date_of_birth)
+                @Html.DisplayFor(modelItem => item.id_student)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.checkin)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.checkout)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |

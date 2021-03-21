@@ -53,6 +53,7 @@ create table Students(
 
 
 create table Attendances(
+	id int identity(1,1) primary key not null,
 	id_subject int foreign key references Subjects(id),
 	id_student int foreign key references Students(id),
 	checkin datetime,

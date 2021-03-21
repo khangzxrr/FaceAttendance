@@ -1,0 +1,43 @@
+﻿@model SpeedyAPI.Models.Attendance
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout_logged.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Attendance</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.id_subject)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.id_subject)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.id_student)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.id_student)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.checkin)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.checkin)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.checkout)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.checkout)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

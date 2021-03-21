@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SpeedyAPI.Models
 {
+    [Table("Subjects")]
     public class Subject
     {
         [Required]
@@ -16,5 +18,8 @@ namespace SpeedyAPI.Models
         public int major_id { get; set; }
         [Required]
         public int teacher_observer { get; set; }
+
+        [ForeignKey("teacher_observer")]
+        public TeacherAccount teacherAccount { get; set; }
     }
 }

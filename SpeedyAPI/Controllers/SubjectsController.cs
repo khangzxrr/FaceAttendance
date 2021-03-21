@@ -18,6 +18,8 @@ namespace SpeedyAPI.Controllers
 
         public string MAJOR_DETAIL_COOKIE = "MAJOR_DETAIL_COOKIE";
 
+        public string SUBJECT_DATA_COOKIES { get; private set; }
+
         public SubjectsController(DBSubjectContext context, DBTeacherContext teacherContext)
         {
             _context = context;
@@ -62,7 +64,7 @@ namespace SpeedyAPI.Controllers
             }
 
 
-            return View(await _context.Subjects.Where(s => s.major_id == cookieMajorId).ToListAsync());
+            return View(await _context.Subjects.Where(s => s.major_id == cookieMajorId).Include(s => s.teacherAccount).ToListAsync());
         }
 
         // GET: Subjects/Details/5
@@ -211,6 +213,26 @@ namespace SpeedyAPI.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+
+        [SchoolManageFilter]
+        public IActionResult AddStudents(int? id)
+        {
+            if (id == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            if (HttpContext.Request.Cookies.ContainsKey(SUBJECT_DATA_COOKIES))
+            {
+                HttpContext.Response.Cookies.Delete(SUBJECT_DATA_COOKIES);
+            }
+
+            HttpContext.Response.Cookies.Append(SUBJECT_DATA_COOKIES, id.ToString());
+
+            return RedirectToAction("Index", "Attendances", id);
+        }
+
 
         private bool SubjectExists(int id)
         {
