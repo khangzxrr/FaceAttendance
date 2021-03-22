@@ -89,6 +89,7 @@ namespace SpeedyAPI.Controllers
             var notAddedStudents = dBStudentContext.Students
                             .Where(s => s.school_id == schoolID)
                             .ToList();
+
             //get all school's student
             notAddedStudents.RemoveAll(s => existsStudents.Any(es => s.id == es.id_student));
 
@@ -108,6 +109,9 @@ namespace SpeedyAPI.Controllers
         {
             if (ModelState.IsValid)
             {
+                attendance.checkin = new DateTime(2000,1,1);
+                attendance.checkout = new DateTime(2000, 1, 1);
+
                 _context.Add(attendance);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

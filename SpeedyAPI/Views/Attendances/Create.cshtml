@@ -20,8 +20,10 @@
             </div>
             <div class="form-group">
                 <label asp-for="id_student" class="control-label"></label>
-                <select asp-for="id_student" class="form-control student_id_selector" name="student_id">
-                    @foreach(Student student in ViewBag.notAddedStudents)
+                <input asp-for="id_student" class="form-control student_id_holder" readonly hidden />
+                <select class="form-control student_id_selector">
+                    <option selected>Please select student</option>
+                    @foreach (Student student in ViewBag.notAddedStudents)
                     {
                         <option value="@student.id">@student.name</option>
                     }
@@ -31,12 +33,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="checkin" class="control-label"></label>
-                <input asp-for="checkin" class="form-control" />
+                <input asp-for="checkin" class="form-control"/>
                 <span asp-validation-for="checkin" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="checkout" class="control-label"></label>
-                <input asp-for="checkout" class="form-control" />
+                <input asp-for="checkout" class="form-control"/>
                 <span asp-validation-for="checkout" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -56,6 +58,9 @@
     <script>
         $(document).ready(function () {
             $('.student_id_selector').select2();
+            $('.student_id_selector').on('select2:select', function (e) {
+                $('.student_id_holder').val($('.student_id_selector').select2('data')[0].id);
+            });
         });
     </script>
 }
