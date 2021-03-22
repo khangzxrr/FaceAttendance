@@ -18,8 +18,6 @@ namespace SpeedyAPI.Controllers
 
         public string MAJOR_DETAIL_COOKIE = "MAJOR_DETAIL_COOKIE";
 
-        public string SUBJECT_DATA_COOKIES { get; private set; }
-
         public SubjectsController(DBSubjectContext context, DBTeacherContext teacherContext)
         {
             _context = context;
@@ -48,7 +46,6 @@ namespace SpeedyAPI.Controllers
                                                });
                 return RedirectToAction("Index", new { id = id, majorName = majorName });
             }
-
 
             var majorDataStr = HttpContext.Request.Cookies[MAJOR_DETAIL_COOKIE].Split("|");
             var cookieMajorId = int.Parse(majorDataStr[0]);
@@ -223,14 +220,7 @@ namespace SpeedyAPI.Controllers
                 return RedirectToAction("Index");
             }
 
-            if (HttpContext.Request.Cookies.ContainsKey(SUBJECT_DATA_COOKIES))
-            {
-                HttpContext.Response.Cookies.Delete(SUBJECT_DATA_COOKIES);
-            }
-
-            HttpContext.Response.Cookies.Append(SUBJECT_DATA_COOKIES, id.ToString());
-
-            return RedirectToAction("Index", "Attendances", id);
+            return RedirectToAction("Index", "Attendances", new { subjectId = id });
         }
 
 

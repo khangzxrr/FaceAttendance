@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,13 @@ namespace SpeedyAPI.Controllers
         public TeacherAccountsController(DBTeacherContext context)
         {
             _context = context;
+        }
+
+        [SchoolManageFilter]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<TeacherAccount>>> GetTeacherAccounts()
+        {
+            return await _context.TeacherAccount.ToListAsync();
         }
 
         // GET: TeacherAccounts

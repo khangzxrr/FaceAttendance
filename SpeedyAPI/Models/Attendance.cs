@@ -18,5 +18,6 @@ namespace SpeedyAPI.Models
         public int id_student { get; set; }
         public DateTime checkin { get; set; }
         public DateTime checkout { get; set; }
+
     }
 }

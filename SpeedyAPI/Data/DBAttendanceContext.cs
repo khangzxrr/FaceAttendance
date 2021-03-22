@@ -11,8 +11,6 @@ namespace SpeedyAPI.Data
 
         }
 
-        public DbSet<Attendance> Attendances;
-
-        public DbSet<SpeedyAPI.Models.Attendance> Attendance { get; set; }
+        public DbSet<Attendance> Attendances { get; set; }
     }
 }
