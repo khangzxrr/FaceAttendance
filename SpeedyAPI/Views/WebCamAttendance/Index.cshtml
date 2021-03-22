@@ -1,0 +1,50 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout_logged.cshtml";
+}
+
+<div id="my_camera" style="width:320px; height:240px;"></div>
+<h1 class="output_name"></h1>
+<div id="my_result"></div>
+
+<h1>HI</h1>
+
+@section Scripts {
+    <script src="~/js/webcam.min.js"></script>
+    <script>
+        Webcam.attach('#my_camera');
+        function take_snapshot() {
+            Webcam.snap(function (data_uri) {
+                document.getElementById('my_result').innerHTML = '<img src="' + data_uri + '"/>';
+
+                var raw_image_data = data_uri.replace(/^data\:image\/\w+\;base64\,/, '');
+
+                var formdata = new FormData();
+                formdata.append("base64", raw_image_data);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/WebcamAttendance/Identity',
+                    processData: false,
+                    contentType: false,
+                    dataType: 'json',
+                    data: formdata,
+                    success: function (data) {
+                        console.log(data);
+                        if (data != undefined) {
+                            $(".output_name").text(data.name);
+                        } else {
+                            $(".output_name").text("KHONG NHAN RA!");
+                        }
+                        take_snapshot();
+                    },
+                    error: function (err) {
+                    }
+                });
+
+
+            });
+        }
+    </script>
+}
+
+<a href="javascript:void(take_snapshot())">Take Snapshot</a>

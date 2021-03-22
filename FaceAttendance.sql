@@ -48,7 +48,8 @@ create table Students(
 	id int identity(1,1) primary key not null,
 	name nvarchar(100),
 	date_of_birth date,
-	school_id int foreign key references SchoolAccounts(id)
+	school_id int foreign key references SchoolAccounts(id),
+	image_url nvarchar(255)
 )
 
 

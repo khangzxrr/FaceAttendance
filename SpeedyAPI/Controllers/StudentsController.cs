@@ -1,5 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,9 +17,12 @@ namespace SpeedyAPI.Controllers
     {
         private readonly DBStudentContext _context;
 
-        public StudentsController(DBStudentContext context)
+        private IWebHostEnvironment webHostEnvironment;
+
+        public StudentsController(DBStudentContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            webHostEnvironment = environment;
         }
 
         // GET: Students
@@ -77,10 +83,23 @@ namespace SpeedyAPI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,name,date_of_birth,school_id")] Student student)
+        [SchoolManageFilter]
+        public async Task<IActionResult> Create([Bind("id,name,imageFile,date_of_birth,school_id")] Student student)
         {
             if (ModelState.IsValid)
             {
+                string fileName = Path.GetFileNameWithoutExtension(student.imageFile.FileName);
+                string extension = Path.GetExtension(student.imageFile.FileName);
+
+                string imageName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                string path = webHostEnvironment.WebRootPath + "/upload/" + imageName;
+                using(var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    await student.imageFile.CopyToAsync(fileStream);
+                }
+
+                student.image_url = path;
+
                 _context.Add(student);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -88,6 +107,7 @@ namespace SpeedyAPI.Controllers
             return View(student);
         }
 
+        [SchoolManageFilter]
         // GET: Students/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -109,7 +129,8 @@ namespace SpeedyAPI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id,name,date_of_birth,school_id")] Student student)
+        [SchoolManageFilter]
+        public async Task<IActionResult> Edit(int id, [Bind("id,name,imageFile,date_of_birth,school_id")] Student student)
         {
             if (id != student.id)
             {
@@ -120,6 +141,18 @@ namespace SpeedyAPI.Controllers
             {
                 try
                 {
+                    string fileName = Path.GetFileNameWithoutExtension(student.imageFile.FileName);
+                    string extension = Path.GetExtension(student.imageFile.FileName);
+
+                    string imageName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                    string path = webHostEnvironment.WebRootPath + "/upload/" + imageName;
+                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        await student.imageFile.CopyToAsync(fileStream);
+                    }
+
+                    student.image_url = imageName;
+
                     _context.Update(student);
                     await _context.SaveChangesAsync();
                 }
@@ -140,6 +173,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: Students/Delete/5
+        [SchoolManageFilter]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -160,6 +194,7 @@ namespace SpeedyAPI.Controllers
         // POST: Students/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [SchoolManageFilter]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var student = await _context.Students.FindAsync(id);

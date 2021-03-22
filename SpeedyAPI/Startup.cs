@@ -5,23 +5,27 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SpeedyAPI.Data;
-using SpeedyAPI.Filters;
 using System;
 
 namespace SpeedyAPI
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            
         }
 
         public IConfiguration Configuration { get; }
+        
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpClient();
+
             services.AddControllersWithViews();
 
             services.AddDistributedMemoryCache();
@@ -61,6 +65,7 @@ namespace SpeedyAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -74,10 +79,12 @@ namespace SpeedyAPI
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            app.UseSession();
+
             app.UseRouting();
 
-            
-            app.UseSession();
+            app.UseCors();
+
 
             app.UseAuthorization();
 
@@ -86,7 +93,11 @@ namespace SpeedyAPI
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "webcamattendance",
+                    pattern: "{controller=WebcamAttendance}/{action=Index}");
             });
+            
         }
     }
 }

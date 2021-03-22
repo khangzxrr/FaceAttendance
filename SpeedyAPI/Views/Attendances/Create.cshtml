@@ -11,7 +11,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" >
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="id_subject" class="control-label"></label>
@@ -33,12 +33,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="checkin" class="control-label"></label>
-                <input asp-for="checkin" class="form-control"/>
+                <input asp-for="checkin" class="form-control" hidden />
                 <span asp-validation-for="checkin" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="checkout" class="control-label"></label>
-                <input asp-for="checkout" class="form-control"/>
+                <input asp-for="checkout" class="form-control" hidden/>
                 <span asp-validation-for="checkout" class="text-danger"></span>
             </div>
             <div class="form-group">
