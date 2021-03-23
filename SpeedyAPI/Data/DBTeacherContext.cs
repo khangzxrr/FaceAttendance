@@ -11,8 +11,6 @@ namespace SpeedyAPI.Data
 
         }
 
-        public DbSet<TeacherAccount> TeacherAccounts;
-
-        public DbSet<SpeedyAPI.Models.TeacherAccount> TeacherAccount { get; set; }
+        public DbSet<TeacherAccount> TeacherAccounts { get; set; }
     }
 }

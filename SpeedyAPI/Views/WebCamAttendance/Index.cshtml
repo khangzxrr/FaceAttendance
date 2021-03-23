@@ -1,50 +1,15 @@
-﻿@{
-    Layout = "~/Views/Shared/_Layout_logged.cshtml";
-}
+﻿@model SpeedyAPI.Models.WebcamAttendance.TeacherLogin 
 
-<div id="my_camera" style="width:320px; height:240px;"></div>
-<h1 class="output_name"></h1>
-<div id="my_result"></div>
-
-<h1>HI</h1>
-
-@section Scripts {
-    <script src="~/js/webcam.min.js"></script>
-    <script>
-        Webcam.attach('#my_camera');
-        function take_snapshot() {
-            Webcam.snap(function (data_uri) {
-                document.getElementById('my_result').innerHTML = '<img src="' + data_uri + '"/>';
-
-                var raw_image_data = data_uri.replace(/^data\:image\/\w+\;base64\,/, '');
-
-                var formdata = new FormData();
-                formdata.append("base64", raw_image_data);
-
-                $.ajax({
-                    type: 'POST',
-                    url: '/WebcamAttendance/Identity',
-                    processData: false,
-                    contentType: false,
-                    dataType: 'json',
-                    data: formdata,
-                    success: function (data) {
-                        console.log(data);
-                        if (data != undefined) {
-                            $(".output_name").text(data.name);
-                        } else {
-                            $(".output_name").text("KHONG NHAN RA!");
-                        }
-                        take_snapshot();
-                    },
-                    error: function (err) {
-                    }
-                });
-
-
-            });
-        }
-    </script>
-}
-
-<a href="javascript:void(take_snapshot())">Take Snapshot</a>
+<form asp-action="TeacherLogin">
+    <p class="text-danger">@ViewBag.error</p>
+    <div class="form-group">
+        <label asp-for="email">Email address</label>
+        <input asp-for="email" type="email" class="form-control" placeholder="Enter email">
+        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+    </div>
+    <div class="form-group">
+        <label asp-for="password">Password</label>
+        <input asp-for="password" type="password" class="form-control" placeholder="Password">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

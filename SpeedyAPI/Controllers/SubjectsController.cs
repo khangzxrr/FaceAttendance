@@ -15,7 +15,6 @@ namespace SpeedyAPI.Controllers
     {
         private readonly DBSubjectContext _context;
         private readonly DBTeacherContext teacherContext;
-
         public string MAJOR_DETAIL_COOKIE = "MAJOR_DETAIL_COOKIE";
 
         public SubjectsController(DBSubjectContext context, DBTeacherContext teacherContext)
@@ -89,7 +88,7 @@ namespace SpeedyAPI.Controllers
         {
             var school = HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID);
             ViewBag.majorId = majorId;
-            ViewBag.teachers = teacherContext.TeacherAccount
+            ViewBag.teachers = teacherContext.TeacherAccounts
                                                 .Where(t => t.teach_in_school == school.id)
                                                 .ToList();
 
@@ -110,7 +109,7 @@ namespace SpeedyAPI.Controllers
             if (ModelState.IsValid)
             {
                 var school = HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID);
-                ViewBag.teachers = teacherContext.TeacherAccount
+                ViewBag.teachers = teacherContext.TeacherAccounts
                                                     .Where(t => t.teach_in_school == school.id)
                                                     .ToList();
 

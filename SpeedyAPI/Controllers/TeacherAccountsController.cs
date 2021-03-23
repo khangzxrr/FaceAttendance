@@ -24,7 +24,7 @@ namespace SpeedyAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TeacherAccount>>> GetTeacherAccounts()
         {
-            return await _context.TeacherAccount.ToListAsync();
+            return await _context.TeacherAccounts.ToListAsync();
         }
 
         // GET: TeacherAccounts
@@ -35,10 +35,10 @@ namespace SpeedyAPI.Controllers
 
             if (school != null)
             {
-                return View(await _context.TeacherAccount.Where(t => t.teach_in_school == school.id).ToListAsync());
+                return View(await _context.TeacherAccounts.Where(t => t.teach_in_school == school.id).ToListAsync());
             }
 
-            return View(await _context.TeacherAccount.ToListAsync());
+            return View(await _context.TeacherAccounts.ToListAsync());
         }
 
         // GET: TeacherAccounts/Details/5
@@ -50,7 +50,7 @@ namespace SpeedyAPI.Controllers
                 return NotFound();
             }
 
-            var teacherAccount = await _context.TeacherAccount
+            var teacherAccount = await _context.TeacherAccounts
                 .FirstOrDefaultAsync(m => m.id == id);
             if (teacherAccount == null)
             {
@@ -96,7 +96,7 @@ namespace SpeedyAPI.Controllers
                 return NotFound();
             }
 
-            var teacherAccount = await _context.TeacherAccount.FindAsync(id);
+            var teacherAccount = await _context.TeacherAccounts.FindAsync(id);
             if (teacherAccount == null)
             {
                 return NotFound();
@@ -149,7 +149,7 @@ namespace SpeedyAPI.Controllers
                 return NotFound();
             }
 
-            var teacherAccount = await _context.TeacherAccount
+            var teacherAccount = await _context.TeacherAccounts
                 .FirstOrDefaultAsync(m => m.id == id);
             if (teacherAccount == null)
             {
@@ -165,15 +165,15 @@ namespace SpeedyAPI.Controllers
         [SchoolManageFilter]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var teacherAccount = await _context.TeacherAccount.FindAsync(id);
-            _context.TeacherAccount.Remove(teacherAccount);
+            var teacherAccount = await _context.TeacherAccounts.FindAsync(id);
+            _context.TeacherAccounts.Remove(teacherAccount);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool TeacherAccountExists(int id)
         {
-            return _context.TeacherAccount.Any(e => e.id == id);
+            return _context.TeacherAccounts.Any(e => e.id == id);
         }
     }
 }

@@ -19,5 +19,11 @@ namespace SpeedyAPI.Models
         public DateTime checkin { get; set; }
         public DateTime checkout { get; set; }
 
+
+        [ForeignKey("id_subject")]
+        public Subject subject { get; set; }
+        [ForeignKey("id_student")]
+        public Student student { get; set; }
+
     }
 }
