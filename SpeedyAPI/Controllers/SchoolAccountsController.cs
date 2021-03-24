@@ -13,12 +13,13 @@ namespace SpeedyAPI.Controllers
     public class SchoolAccountsController : Controller
     {
         private readonly DBSchoolLoginContext _context;
-
+        private readonly DBKeyContext keyContext;
         public static string SCHOOL_SESSION_ACCOUNT_ID = "school_account_id";
 
-        public SchoolAccountsController(DBSchoolLoginContext context)
+        public SchoolAccountsController(DBSchoolLoginContext context, DBKeyContext keyContext)
         {
             _context = context;
+            this.keyContext = keyContext;
         }
 
         // GET: SchoolAccounts
@@ -28,7 +29,8 @@ namespace SpeedyAPI.Controllers
             if (HttpContext.Session.GetString(AdminController.SESSION_ADMIN_ROLE) == null)
             {
                 return RedirectToAction("Index", "Home");
-            }else
+            }
+            else
             if (HttpContext.Session.Get<SchoolAccount>(SCHOOL_SESSION_ACCOUNT_ID) != null)
             {
                 return RedirectToAction("Manage");
@@ -67,7 +69,7 @@ namespace SpeedyAPI.Controllers
         [SchoolAdminFilter]
         public IActionResult Logout()
         {
-            HttpContext.Session.Set(SCHOOL_SESSION_ACCOUNT_ID, null);
+            HttpContext.Session.Clear();
 
             return RedirectToAction("Login");
         }
@@ -93,7 +95,7 @@ namespace SpeedyAPI.Controllers
             if (logginAccount != null)
             {
                 HttpContext.Session.Set(SCHOOL_SESSION_ACCOUNT_ID, logginAccount);
-                
+
                 return RedirectToAction("Manage");
             }
             else
@@ -104,7 +106,7 @@ namespace SpeedyAPI.Controllers
             return View();
         }
 
-      
+
         // GET: SchoolAccounts/Details/5
         [SchoolAdminFilter]
         public async Task<IActionResult> Details(int? id)
@@ -125,9 +127,13 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: SchoolAccounts/Create
-        [SchoolAdminFilter]
         public IActionResult Create()
         {
+            if (HttpContext.Session.Get(KeysController.SESSION_USED_KEY) == null)
+            {
+                return RedirectToAction("Use", "Keys");
+            }
+
             return View();
 
         }
@@ -137,9 +143,12 @@ namespace SpeedyAPI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [SchoolAdminFilter]
         public async Task<IActionResult> Create([Bind("id,name,username,password")] SchoolAccount schoolAccount)
         {
+            if (HttpContext.Session.Get(KeysController.SESSION_USED_KEY) == null)
+            {
+                return RedirectToAction("Use", "Keys");
+            }
             if (ModelState.IsValid)
             {
                 var existAccount = _context.SchoolAccounts.FirstOrDefault(s => s.username == schoolAccount.username);
@@ -147,17 +156,26 @@ namespace SpeedyAPI.Controllers
                 if (existAccount == null)
                 {
 
+
                     _context.Add(schoolAccount);
                     await _context.SaveChangesAsync();
 
-                    if (HttpContext.Session.Get(KeysController.SESSION_USED_KEY) != null)
-                    {
-                        //remove key id if user using key to create school account
-                        //HttpContext.Session.Set(KeysController.SESSION_USED_KEY, null);
-                        HttpContext.Session.Remove(KeysController.SESSION_USED_KEY);
-                    }
+                    //====== KEY REMOVE
+                    var key = HttpContext.Session.Get<Key>(KeysController.SESSION_USED_KEY);
+                    key.isUsed = true;
 
-                    return RedirectToAction(nameof(Index));
+                    keyContext.Update(key);
+                    await keyContext.SaveChangesAsync();
+
+                    HttpContext.Session.Remove(KeysController.SESSION_USED_KEY);
+                    //===========================
+
+                    var schoolAdded = await _context.SchoolAccounts
+                            .Where(s => s.username == schoolAccount.username)
+                            .FirstOrDefaultAsync();
+                    HttpContext.Session.Set(SCHOOL_SESSION_ACCOUNT_ID, schoolAdded);
+
+                    return RedirectToAction("Login");
 
                 }
                 else

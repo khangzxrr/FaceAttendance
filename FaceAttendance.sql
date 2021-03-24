@@ -16,12 +16,12 @@ create table SchoolAccounts(
 	password nvarchar(30),
 	external_id varchar(100), /* Google login id */
 
-	key_id int foreign key references Keys(id)
+	key_id int foreign key references Keys(id) 
 )
 
 create table Majors(
 	id int identity(1,1) primary key not null,
-	school_id int foreign key references SchoolAccounts(id),
+	school_id int foreign key references SchoolAccounts(id) ON DELETE CASCADE,
 	startDate datetime,
 	name nvarchar(100)
 )
@@ -32,7 +32,7 @@ create table TeacherAccounts(
 	password nvarchar(30),
 	external_id varchar(100),
 
-	teach_in_school int foreign key references SchoolAccounts(id) not null
+	teach_in_school int foreign key references SchoolAccounts(id) ON DELETE CASCADE not null 
 )
 
 
@@ -40,7 +40,7 @@ create table Subjects(
 	id int identity(1,1) primary key not null,
 	name nvarchar(100),
 	room nvarchar(100) not null,
-	major_id int foreign key references Majors(id) not null,
+	major_id int foreign key references Majors(id) ON DELETE CASCADE not null,
 	teacher_observer int foreign key references TeacherAccounts(id)
 )
 
@@ -48,14 +48,14 @@ create table Students(
 	id int identity(1,1) primary key not null,
 	name nvarchar(100),
 	date_of_birth date,
-	school_id int foreign key references SchoolAccounts(id),
+	school_id int foreign key references SchoolAccounts(id) ON DELETE CASCADE,
 	image_url nvarchar(255)
 )
 
 
 create table Attendances(
 	id int identity(1,1) primary key not null,
-	id_subject int foreign key references Subjects(id),
+	id_subject int foreign key references Subjects(id) ON DELETE CASCADE,
 	id_student int foreign key references Students(id),
 	checkin datetime,
 	checkout datetime
@@ -64,7 +64,7 @@ create table Attendances(
 create table StudentImages(
 	id int identity(1,1) primary key not null,
 	url nvarchar(255) not null,
-	student_id int foreign key references Students(id)
+	student_id int foreign key references Students(id) ON DELETE CASCADE
 )
 
 

@@ -98,7 +98,7 @@ namespace SpeedyAPI.Controllers
                     await student.imageFile.CopyToAsync(fileStream);
                 }
 
-                student.image_url = path;
+                student.image_url = imageName;
 
                 _context.Add(student);
                 await _context.SaveChangesAsync();

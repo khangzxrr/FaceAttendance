@@ -7,6 +7,7 @@ using SpeedyAPI.Data;
 using SpeedyAPI.Models;
 using SpeedyAPI.Extensions;
 using SpeedyAPI.Filters;
+using System;
 
 namespace SpeedyAPI.Controllers
 {
@@ -37,11 +38,23 @@ namespace SpeedyAPI.Controllers
             if (key == null)
             {
                 ViewBag.error = "Key not found, you can buy one at ...";
-                return View("Use");
+                return View();
+            }
+
+            if (key.isUsed)
+            {
+                ViewBag.error = "Key is used, try another...";
+                return View();
+            }
+
+            if (key.create_date > DateTime.Now || DateTime.Now > key.expiry_date)
+            {
+                ViewBag.error = "Key is expried, please try another...";
+                return View();
             }
 
             HttpContext.Session.Set(SESSION_USED_KEY, key);
-            
+           
             return RedirectToAction("Create", "SchoolAccounts");
         }
 
@@ -76,7 +89,7 @@ namespace SpeedyAPI.Controllers
         [AdminFilter]
         public IActionResult Create()
         {
-            return View();
+            return View(new Key());
         }
 
         // POST: Keys/Create

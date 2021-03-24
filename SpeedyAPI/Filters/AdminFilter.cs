@@ -23,7 +23,7 @@ namespace SpeedyAPI.Filters
             var admin = context.HttpContext.Session.GetString(AdminController.SESSION_ADMIN_ROLE);
             if (admin == null)
             {
-                context.Result = new RedirectResult("~/SchoolAccounts/Login");
+                context.Result = new RedirectResult("~/Admin");
             }
         }
     }

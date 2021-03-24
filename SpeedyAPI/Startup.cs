@@ -27,6 +27,8 @@ namespace SpeedyAPI
 
             services.AddControllersWithViews();
 
+            services.AddHttpContextAccessor();
+
             services.AddDistributedMemoryCache();
             services.AddSession(options =>
             {

@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http 
+@using SpeedyAPI.Controllers 
+@inject IHttpContextAccessor HttpContextAccessor 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -21,12 +24,41 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="SchoolAccounts" asp-action="Login">School Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="WebcamAttendance" asp-action="Index">Attendances Identifier</a>
-                        </li>
+                        @{
+                            if (Context.Session.Get(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID) != null)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="SchoolAccounts" asp-action="Manage">Manage</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="SchoolAccounts" asp-action="Logout">Logout</a>
+                                </li>
+                            }
+                            else
+                            if (Context.Session.Get(AdminController.SESSION_ADMIN_ROLE) != null)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Keys" asp-action="Index">Manage Keys</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="SchoolAccounts" asp-action="Index">Manage Schools</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="SchoolAccounts" asp-action="Logout">Logout</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="SchoolAccounts" asp-action="Login">School Login</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="WebcamAttendance" asp-action="Index">Attendances Identifier</a>
+                                </li>
+                            }
+                        }
+
+
                     </ul>
                 </div>
             </div>
