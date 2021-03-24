@@ -11,6 +11,8 @@ namespace SpeedyAPI.Models.WebcamAttendance
         [Required]
         public int selectedMajorId { get; set; }
         public int selectedSubjectId { get; set; }
+
+        public DateTime startTime { get; set; }
         public Subject subject { get; set; }
         public List<Attendance> attendances { get; set; }
     }

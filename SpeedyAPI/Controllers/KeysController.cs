@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using SpeedyAPI.Data;
 using SpeedyAPI.Models;
 using SpeedyAPI.Extensions;
+using SpeedyAPI.Filters;
 
 namespace SpeedyAPI.Controllers
 {
@@ -28,6 +29,7 @@ namespace SpeedyAPI.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+
         public async Task<IActionResult> Use(string keyText)
         {
             var key = await _context.Keys.FirstOrDefaultAsync(m => m.keyText.Equals(keyText));
@@ -45,12 +47,14 @@ namespace SpeedyAPI.Controllers
 
 
         // GET: Keys
+        [AdminFilter]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Keys.ToListAsync());
         }
 
         // GET: Keys/Details/5
+        [AdminFilter]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -69,7 +73,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: Keys/Create
-        
+        [AdminFilter]
         public IActionResult Create()
         {
             return View();
@@ -80,6 +84,7 @@ namespace SpeedyAPI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AdminFilter]
         public async Task<IActionResult> Create([Bind("id,keyText,isUsed,key_type,create_date,expiry_date")] Key key)
         {
             if (ModelState.IsValid)
@@ -92,6 +97,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: Keys/Edit/5
+        [AdminFilter]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -112,6 +118,7 @@ namespace SpeedyAPI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AdminFilter]
         public async Task<IActionResult> Edit(int id, [Bind("id,keyText,isUsed,key_type,create_date,expiry_date")] Key key)
         {
             if (id != key.id)
@@ -143,6 +150,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: Keys/Delete/5
+        [AdminFilter]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -163,6 +171,7 @@ namespace SpeedyAPI.Controllers
         // POST: Keys/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [AdminFilter]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var key = await _context.Keys.FindAsync(id);

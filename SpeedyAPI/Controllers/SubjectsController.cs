@@ -24,7 +24,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: Subjects
-        [SchoolManageFilter]
+        [SchoolAdminFilter]
         public async Task<IActionResult> Index(int? id, string? majorName)
         {
             //id majorName != null  => setcookie
@@ -64,7 +64,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: Subjects/Details/5
-        [SchoolManageFilter]
+        [SchoolAdminFilter]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -83,7 +83,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: Subjects/Create
-        [SchoolManageFilter]
+        [SchoolAdminFilter]
         public IActionResult Create(int? majorId)
         {
             var school = HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID);
@@ -102,7 +102,7 @@ namespace SpeedyAPI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [SchoolManageFilter]
+        [SchoolAdminFilter]
         public async Task<IActionResult> Create([Bind("id,name,room,major_id,teacher_observer")] Subject subject)
         {
 
@@ -127,7 +127,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: Subjects/Edit/5
-        [SchoolManageFilter]
+        [SchoolAdminFilter]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -148,7 +148,7 @@ namespace SpeedyAPI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [SchoolManageFilter]
+        [SchoolAdminFilter]
         public async Task<IActionResult> Edit(int id, [Bind("id,name,room,major_id,teacher_observer")] Subject subject)
         {
             if (id != subject.id)
@@ -180,7 +180,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: Subjects/Delete/5
-        [SchoolManageFilter]
+        [SchoolAdminFilter]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -201,7 +201,7 @@ namespace SpeedyAPI.Controllers
         // POST: Subjects/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [SchoolManageFilter]
+        [SchoolAdminFilter]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var subject = await _context.Subjects.FindAsync(id);
@@ -211,7 +211,7 @@ namespace SpeedyAPI.Controllers
         }
 
 
-        [SchoolManageFilter]
+        [SchoolAdminFilter]
         public IActionResult AddStudents(int? id)
         {
             if (id == null)

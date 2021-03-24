@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SpeedyAPI.Filters
 {
-    public class SchoolManageFilter : Attribute, IActionFilter
+    public class SchoolAdminFilter : Attribute, IActionFilter
     {
         public void OnActionExecuted(ActionExecutedContext context)
         {

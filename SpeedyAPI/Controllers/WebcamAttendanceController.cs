@@ -255,13 +255,14 @@ namespace SpeedyAPI.Controllers
                 return View(room);
             }
 
-            room.subject = dBSubjectContext.Subjects.Where(s => s.id == room.selectedSubjectId).FirstOrDefault();
+            room.subject = dBSubjectContext.Subjects.Where(s => s.id == room.selectedSubjectId).Include(s => s.Major).FirstOrDefault();
+
             room.attendances = attendanceContext.Attendances
                                                 .Where(a => a.id_subject == room.selectedSubjectId)
                                                 .Include(a => a.student)
                                                 .ToList();
 
-            HttpContext.Session.Set<Room>(SELECTED_ROOM, room);
+            HttpContext.Session.Set(SELECTED_ROOM, room);
 
             return RedirectToAction("Recognition");
         }
@@ -329,14 +330,25 @@ namespace SpeedyAPI.Controllers
 
                 var room = HttpContext.Session.Get<Room>(SELECTED_ROOM);
                 //2000 is default year that mean he/she s not recognized
-                var attendance = room.attendances.Where(a => a.id_student == cloestStudent.id && a.checkin.Year == 2000)
+                var attendance = room.attendances.Where(a => a.id_student == cloestStudent.id 
+                                               && (a.checkin.Year == 2000 || a.checkout.Year == 2000))
                                 .FirstOrDefault();
+
                 if (attendance != null)
                 {
-                    attendance.checkin = DateTime.Now;
-                    HttpContext.Session.Set<Room>(SELECTED_ROOM, room);
+                    if (attendance.checkin.Year == 2000)
+                    {
+                        attendance.checkin = DateTime.Now;
+                    }else
+                    if (attendance.checkout.Year == 2000 
+                        && (DateTime.Now - room.subject.Major.startDate >= TimeSpan.FromSeconds(30))
+                        )
+                    {
+                        attendance.checkout = DateTime.Now;
+                    }
+                    
+                    HttpContext.Session.Set(SELECTED_ROOM, room);
                 }
-
 
                 return Ok(cloestStudent);
             }

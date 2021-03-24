@@ -22,7 +22,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: SchoolAccounts
-        [SchoolManageFilter]
+        [SchoolAdminFilter]
         public async Task<IActionResult> Index()
         {
             if (HttpContext.Session.GetString(AdminController.SESSION_ADMIN_ROLE) == null)
@@ -38,7 +38,7 @@ namespace SpeedyAPI.Controllers
         }
 
 
-        [SchoolManageFilter]
+        [SchoolAdminFilter]
         public IActionResult Manage()
         {
             var school = HttpContext.Session.Get<SchoolAccount>(SCHOOL_SESSION_ACCOUNT_ID);
@@ -64,7 +64,7 @@ namespace SpeedyAPI.Controllers
         }
 
         //GET: SchoolAccounts/Logout
-        [SchoolManageFilter]
+        [SchoolAdminFilter]
         public IActionResult Logout()
         {
             HttpContext.Session.Set(SCHOOL_SESSION_ACCOUNT_ID, null);
@@ -106,7 +106,7 @@ namespace SpeedyAPI.Controllers
 
       
         // GET: SchoolAccounts/Details/5
-        [SchoolManageFilter]
+        [SchoolAdminFilter]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -125,7 +125,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: SchoolAccounts/Create
-        [SchoolManageFilter]
+        [SchoolAdminFilter]
         public IActionResult Create()
         {
             return View();
@@ -137,7 +137,7 @@ namespace SpeedyAPI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [SchoolManageFilter]
+        [SchoolAdminFilter]
         public async Task<IActionResult> Create([Bind("id,name,username,password")] SchoolAccount schoolAccount)
         {
             if (ModelState.IsValid)
@@ -170,7 +170,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: SchoolAccounts/Edit/5
-        [SchoolManageFilter]
+        [SchoolAdminFilter]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -191,7 +191,7 @@ namespace SpeedyAPI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [SchoolManageFilter]
+        [SchoolAdminFilter]
         public async Task<IActionResult> Edit(int id, [Bind("id,name,username,password")] SchoolAccount schoolAccount)
         {
             if (id != schoolAccount.id)
@@ -223,7 +223,7 @@ namespace SpeedyAPI.Controllers
         }
 
         // GET: SchoolAccounts/Delete/5
-        [SchoolManageFilter]
+        [SchoolAdminFilter]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -244,7 +244,7 @@ namespace SpeedyAPI.Controllers
         // POST: SchoolAccounts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [SchoolManageFilter]
+        [SchoolAdminFilter]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var schoolAccount = await _context.SchoolAccounts.FindAsync(id);

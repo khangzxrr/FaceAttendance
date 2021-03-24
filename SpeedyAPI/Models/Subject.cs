@@ -21,5 +21,8 @@ namespace SpeedyAPI.Models
 
         [ForeignKey("teacher_observer")]
         public TeacherAccount teacherAccount { get; set; }
+
+        [ForeignKey("major_id")]
+        public Major Major { get; set; }
     }
 }
