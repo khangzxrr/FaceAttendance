@@ -2,17 +2,42 @@
     Layout = "~/Views/Shared/_Layout_logged.cshtml";
 }
 
-<div id="my_camera" style="width:320px; height:240px;"></div>
-<h1 class="output_name"></h1>
-<div id="my_result"></div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div id="my_camera" style="width:640px; height:480px;"></div>
+        </div>
+        <div class="col-md-6">
+            <div id="my_result"></div>
+        </div>
+        <div class="col-md-12 m-2 p-2">
+            <div class="row">
+                <div class="col-md-auto">
+                    <button type="button" class="btn btn-info" onclick="take_snapshot()">Start recognition</button>
+                </div>
+            </div>
+
+            <h3 class="output_name"></h3>
+
+            <div class="list-group list_attendance">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<form asp-action="SaveAttendances">
+    <button type="submit" class="btn btn-primary">Save Attendances</button>
+</form>
 
 @section Scripts {
     <script src="~/js/webcam.min.js"></script>
     <script>
         Webcam.attach('#my_camera');
+       
         function take_snapshot() {
             Webcam.snap(function (data_uri) {
-                document.getElementById('my_result').innerHTML = '<img src="' + data_uri + '"/>';
+                //document.getElementById('my_result').innerHTML = '<img src="' + data_uri + '"/>';
 
                 var raw_image_data = data_uri.replace(/^data\:image\/\w+\;base64\,/, '');
 
@@ -27,13 +52,19 @@
                     dataType: 'json',
                     data: formdata,
                     success: function (data) {
-                        console.log(data);
                         if (data != undefined) {
-                            $(".output_name").text(data.name);
+                            $(".output_name").text("Hello, " + data.name + " now you can go to your sit");
+
+                            requestLandmarkImage(formdata);
+                              
                         } else {
-                            $(".output_name").text("KHONG NHAN RA!");
+                            $(".output_name").text("I cant recognize this student...");
+                            take_snapshot();
                         }
-                        take_snapshot();
+
+                        getAttendances();
+
+                        
                     },
                     error: function (err) {
                     }
@@ -42,7 +73,58 @@
 
             });
         }
+
+        function getAttendances() {
+            $.ajax({
+                type: 'GET',
+                url: '/WebcamAttendance/GetAttendances',
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
+                    $(".list_attendance").empty();
+                    for (var i = 0; i < data.attendances.length; i++) {
+                        var checkin = new Date(data.attendances[i].checkin);
+
+                        var template = '<li class="list-group-item d-flex justify-content-between align-items-center">NAME'
+                            + '<span class="badge badge-primary badge-pill">'
+                            + 'STATUS'
+                            + '</span></li>'
+
+                        template = template.replace('NAME', data.attendances[i].student.name);
+
+                        console.log(checkin.getHours());
+
+                        if (checkin.getFullYear() != 2000) {
+                            template = template.replace('STATUS', checkin.getHours() + ':' + checkin.getMinutes());
+                        } else {
+                            template = template.replace('STATUS', 'Not yet');
+                        }
+
+                        $(".list_attendance").append(template);
+                    }
+                }
+            })
+        }
+
+        function requestLandmarkImage(formdata) {
+            $.ajax({
+                type: 'POST',
+                url: '/WebcamAttendance/ExtractFaceData',
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                data: formdata,
+                success: function (data) {
+                    $("#my_result").html('<img src="data:image/jpg;base64,' + data.base64Image + '" />')
+                    take_snapshot();
+                },
+                error: function (err) {
+                    console.log("error!");
+                    console.log(err);
+                }
+            });
+        }
     </script>
 }
-
-<a href="javascript:void(take_snapshot())">Take Snapshot</a>

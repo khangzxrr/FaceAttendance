@@ -1,4 +1,21 @@
-﻿@model SpeedyAPI.Models.WebcamAttendance.TeacherLogin 
+﻿@model SpeedyAPI.Models.WebcamAttendance.TeacherLogin
+
+@if (ViewBag.error != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @ViewBag.error
+    </div>
+}
+
+@if (ViewBag.success != null)
+{
+    <div class="alert alert-success" role="alert">
+        @ViewBag.success
+    </div>
+}
+
+
+
 
 <form asp-action="TeacherLogin">
     <p class="text-danger">@ViewBag.error</p>

@@ -37,7 +37,7 @@ namespace SpeedyAPI.Controllers
 
         public string SELECTED_ROOM = "SELECTED_ROOM";
 
-        public WebcamAttendanceController(IHttpClientFactory clientFactory, 
+        public WebcamAttendanceController(IHttpClientFactory clientFactory,
                   DBStudentContext dBStudentContext,
                   DBTeacherContext dBTeacherContext,
                   DBAttendanceContext attendanceContext,
@@ -54,6 +54,39 @@ namespace SpeedyAPI.Controllers
             this.environment = environment;
         }
 
+        private async Task<string> RequestLandmarkImage(string base64)
+        {
+            var jsonArrayImage = new JArray();
+            jsonArrayImage.Add(base64);
+
+            var jsonObject = new JObject(
+                    new JProperty("images",
+                        new JObject(
+                            new JProperty("data",
+                                jsonArrayImage)
+                        )
+                    )
+                );
+
+            var content = new StringContent(jsonObject.ToString(Formatting.None), Encoding.ASCII, "application/json");
+
+            var request = new HttpRequestMessage(
+           HttpMethod.Post,
+           insightFacelURL + "/draw_detections");
+
+            request.Content = content;
+
+            var client = httpClientFactory.CreateClient();
+            var response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var imageContent = await response.Content.ReadAsByteArrayAsync();
+                return Convert.ToBase64String(imageContent);
+            }
+
+            return null;
+        }
         private async Task<List<float[]>> RequestApiToIdentify(JArray base64Images)
         {
             List<float[]> identityFaces = new List<float[]>();
@@ -89,8 +122,8 @@ namespace SpeedyAPI.Controllers
                     using (var jsonReader = new JsonTextReader(sr))
                     {
                         var message = serializer.Deserialize<JArray>(jsonReader);
-                    
-                        foreach(JArray person in message)
+
+                        foreach (JArray person in message)
                         {
                             if (person.Count > 0)
                             {
@@ -98,17 +131,29 @@ namespace SpeedyAPI.Controllers
                                 identityFaces.Add(vector);
                             }
                         }
-                        
+
                     }
 
                 }
 
 
             }
-          
+
 
             return identityFaces;
         }
+
+
+        [TeacherFilter]
+        [HttpPost]
+        public async Task<IActionResult> ExtractFaceData(string base64)
+        {
+            var image = await RequestLandmarkImage(base64);
+            var studentImage = new StudentImage();
+            studentImage.base64Image = image;
+            return Ok(studentImage);
+        }
+
 
         [TeacherFilter]
         public async Task<IActionResult> Recognition()
@@ -124,8 +169,7 @@ namespace SpeedyAPI.Controllers
                                             .Where(a => a.id_subject == room.selectedSubjectId)
                                             .Include(a => a.student)
                                             .ToList();
-
-            //REWORK student filter base on subject!!!!!!!!!!!!!!!!!!
+            room.attendances = attendances;
 
             JArray studentBase64Images = new JArray();
             foreach (var attendance in attendances)
@@ -170,6 +214,34 @@ namespace SpeedyAPI.Controllers
 
         [HttpPost]
         [TeacherFilter]
+        public async Task<IActionResult> SaveAttendances()
+        {
+            if (HttpContext.Session.Get<Room>(SELECTED_ROOM) == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            var room = HttpContext.Session.Get<Room>(SELECTED_ROOM);
+            try
+            {
+                foreach (var attendance in room.attendances)
+                {
+                    attendanceContext.Update(attendance);
+                }
+                await attendanceContext.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                ViewBag.error = "ERROR When saving attendances.. please contact developer";
+            }
+
+            ViewBag.success = "Saved attendances!";
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [TeacherFilter]
         [ValidateAntiForgeryToken]
         public IActionResult ChooseSubject([Bind("selectedMajorId, selectedSubjectId")] Room room)
         {
@@ -185,7 +257,9 @@ namespace SpeedyAPI.Controllers
 
             room.subject = dBSubjectContext.Subjects.Where(s => s.id == room.selectedSubjectId).FirstOrDefault();
             room.attendances = attendanceContext.Attendances
-                                                .Where(a => a.id_subject == room.selectedSubjectId).ToList();
+                                                .Where(a => a.id_subject == room.selectedSubjectId)
+                                                .Include(a => a.student)
+                                                .ToList();
 
             HttpContext.Session.Set<Room>(SELECTED_ROOM, room);
 
@@ -211,11 +285,17 @@ namespace SpeedyAPI.Controllers
 
                 if (teachers.Count > 0)
                 {
-                    HttpContext.Session.Set<TeacherAccount>(TEACHER_LOGGED, teachers.First());
+                    HttpContext.Session.Set(TEACHER_LOGGED, teachers.First());
                     return RedirectToAction("ChooseSubject");
                 }
             }
             return View("Index");
+        }
+
+        [TeacherFilter]
+        public IActionResult GetAttendances()
+        {
+            return Ok(HttpContext.Session.Get<Room>(SELECTED_ROOM));
         }
 
         [HttpPost]
@@ -226,8 +306,12 @@ namespace SpeedyAPI.Controllers
             {
                 return RedirectToAction("Index");
             }
+            if (HttpContext.Session.Get<Room>(SELECTED_ROOM) == null)
+            {
+                return RedirectToAction("Index");
+            }
 
-            var faceVectors = HttpContext.Session.Get<StudentFaceVectors> (STUDENT_FACE_VECTORS);
+            var faceVectors = HttpContext.Session.Get<StudentFaceVectors>(STUDENT_FACE_VECTORS);
 
             var base64Images = new JArray();
             base64Images.Add(base64);
@@ -243,10 +327,20 @@ namespace SpeedyAPI.Controllers
                 }
 
 
+                var room = HttpContext.Session.Get<Room>(SELECTED_ROOM);
+                //2000 is default year that mean he/she s not recognized
+                var attendance = room.attendances.Where(a => a.id_student == cloestStudent.id && a.checkin.Year == 2000)
+                                .FirstOrDefault();
+                if (attendance != null)
+                {
+                    attendance.checkin = DateTime.Now;
+                    HttpContext.Session.Set<Room>(SELECTED_ROOM, room);
+                }
+
 
                 return Ok(cloestStudent);
             }
-            
+
             return Ok(null);
         }
         [HttpGet]
