@@ -252,6 +252,7 @@ namespace SpeedyAPI.Controllers
             {
                 ViewBag.subjects = dBSubjectContext.Subjects.Where(s => s.major_id == room.selectedMajorId).ToList();
                 ViewBag.majors = dBMajorContext.Majors.Where(m => m.school_id == teacher.teach_in_school).ToList();
+   
                 return View(room);
             }
 
@@ -288,6 +289,10 @@ namespace SpeedyAPI.Controllers
                 {
                     HttpContext.Session.Set(TEACHER_LOGGED, teachers.First());
                     return RedirectToAction("ChooseSubject");
+                }
+                else
+                {
+                    ViewBag.error = "Wrong email/password";
                 }
             }
             return View("Index");

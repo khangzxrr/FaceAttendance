@@ -108,6 +108,7 @@ namespace SpeedyAPI.Controllers
 
             if (ModelState.IsValid)
             {
+
                 var school = HttpContext.Session.Get<SchoolAccount>(SchoolAccountsController.SCHOOL_SESSION_ACCOUNT_ID);
                 ViewBag.teachers = teacherContext.TeacherAccounts
                                                     .Where(t => t.teach_in_school == school.id)
@@ -212,14 +213,14 @@ namespace SpeedyAPI.Controllers
 
 
         [SchoolAdminFilter]
-        public IActionResult AddStudents(int? id)
+        public IActionResult AddStudents(int? id, string? name)
         {
             if (id == null)
             {
                 return RedirectToAction("Index");
             }
 
-            return RedirectToAction("Index", "Attendances", new { subjectId = id });
+            return RedirectToAction("Index", "Attendances", new { subjectId = id, subjectName = name });
         }
 
 

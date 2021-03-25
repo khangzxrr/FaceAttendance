@@ -4,13 +4,17 @@
     ViewData["Title"] = "Create";
 }
 
+@section Styles {
+    <link href="~/css/select2.min.css" rel="stylesheet" type="text/css" />
+}
+
 <h1>Create</h1>
 
 <h4>Attendance</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create" >
+        <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="id_subject" class="control-label"></label>
@@ -20,6 +24,7 @@
             <div class="form-group">
                 <label asp-for="id_student" class="control-label"></label>
                 <input asp-for="id_student" class="form-control student_id_holder" readonly hidden />
+                <span asp-validation-for="id_student" class="text-danger">@TempData["error"]</span>
                 <select class="form-control student_id_selector">
                     <option selected>Please select student</option>
                     @foreach (Student student in ViewBag.notAddedStudents)
@@ -27,8 +32,6 @@
                         <option value="@student.id">@student.name</option>
                     }
                 </select>
-
-                <span asp-validation-for="id_student" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="checkin" class="control-label"></label>
@@ -37,7 +40,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="checkout" class="control-label"></label>
-                <input asp-for="checkout" class="form-control" hidden/>
+                <input asp-for="checkout" class="form-control" hidden />
                 <span asp-validation-for="checkout" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -53,7 +56,7 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-
+    <script src="~/js/select2.min.js"></script>
     <script>
         $(document).ready(function () {
             $('.student_id_selector').select2();

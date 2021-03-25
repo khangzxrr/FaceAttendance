@@ -17,6 +17,8 @@ namespace SpeedyAPI.Controllers
         private readonly DBStudentContext dBStudentContext;
         public string SUBJECT_ID_COOKIE = "SUBJECT_ID_COOKIE";
 
+        public string SUBJECT_NAME_COOKIE = "SUBJECT_NAME_COOKIE";
+
         public AttendancesController(DBAttendanceContext context, DBStudentContext dBStudentContext)
         {
             _context = context;
@@ -25,7 +27,7 @@ namespace SpeedyAPI.Controllers
 
         // GET: Attendances
         [SchoolAdminFilter]
-        public async Task<IActionResult> Index(int? subjectId)
+        public async Task<IActionResult> Index(int? subjectId, string? subjectName)
         {
             if (subjectId == null && !HttpContext.Request.Cookies.ContainsKey(SUBJECT_ID_COOKIE))
             {
@@ -35,15 +37,18 @@ namespace SpeedyAPI.Controllers
             if (!HttpContext.Request.Cookies.ContainsKey(SUBJECT_ID_COOKIE))
             {
                 HttpContext.Response.Cookies.Append(SUBJECT_ID_COOKIE, subjectId.ToString());
+                HttpContext.Response.Cookies.Append(SUBJECT_NAME_COOKIE, subjectName);
                 return RedirectToAction("Index");
             }
 
             var cookieSubjectId = int.Parse(HttpContext.Request.Cookies[SUBJECT_ID_COOKIE]);
+            ViewBag.subjectName = HttpContext.Request.Cookies[SUBJECT_NAME_COOKIE];
 
-            if (subjectId != null && subjectId != cookieSubjectId)
+
+            if ((subjectId != null && subjectId != cookieSubjectId) || ViewBag.subjectName == null)
             {
                 HttpContext.Response.Cookies.Delete(SUBJECT_ID_COOKIE);
-                return RedirectToAction("Index", subjectId);
+                return RedirectToAction("Index", new { subjectId = subjectId, subjectName  = subjectName });
             }
 
             return View(await _context.Attendances.ToListAsync());
@@ -109,6 +114,12 @@ namespace SpeedyAPI.Controllers
         {
             if (ModelState.IsValid)
             {
+                if(attendance.id_student == 0)
+                {
+                    TempData["error"] = "Please select student";
+                    return RedirectToAction("Create", attendance);
+                }
+
                 attendance.checkin = new DateTime(2000,1,1);
                 attendance.checkout = new DateTime(2000, 1, 1);
 

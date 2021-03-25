@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SpeedyAPI.Validations;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -15,6 +16,7 @@ namespace SpeedyAPI.Models
         [MaxLength(100)]
         public string name { get; set; }
         [Required]
+        [MustBeInPresent]
         public DateTime startDate { get; set; }
     }
 }

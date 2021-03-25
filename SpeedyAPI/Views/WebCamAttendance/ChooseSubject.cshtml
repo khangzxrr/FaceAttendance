@@ -5,6 +5,10 @@
     
 }
 
+@section Styles {
+    <link href="~/css/select2.min.css" rel="stylesheet" type="text/css" />
+}
+
 
 <h1>Please choose major and subject to start identity students</h1>
 <div class="container">
@@ -21,7 +25,6 @@
                     <option value="@major.id">@major.name | @major.startDate</option>
                 }
             </select>
-            <span class="text-danger"></span>
         </div>
         <div class="form-group">
             <input type="submit" value="Get major subjects" class="btn btn-primary" />
@@ -55,6 +58,7 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
+    <script src="~/js/select2.min.js"></script>
     <script>
         $(document).ready(function () {
             $(".selectedSubjectField").val(-1);
